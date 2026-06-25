@@ -50,10 +50,18 @@ export const splitSentences = (text: string): string[] => {
   return sentences;
 };
 
-/** Split text into paragraphs, each an array of sentences. Preserves breaks. */
+/**
+ * Split text into paragraphs, each an array of sentences.
+ *
+ * Only blank lines (\n\n+) start a new paragraph — single newlines inside a
+ * block are treated as inline whitespace so authored content that puts one
+ * sentence per line still renders as flowing prose. SentenceBlock is built to
+ * lay sentences out inline within a single <p>; without this, every line in
+ * the library JSON became its own one-sentence "paragraph".
+ */
 export const splitParagraphs = (text: string): string[][] =>
   text
-    .split(/\n+/)
-    .map((p) => p.trim())
+    .split(/\n{2,}/)
+    .map((p) => p.replace(/\n+/g, " ").trim())
     .filter(Boolean)
     .map(splitSentences);

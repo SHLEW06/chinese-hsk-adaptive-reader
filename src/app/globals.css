@@ -1,0 +1,282 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------- */
+/*  Reading room — paper / seal palette, with a warm night mode.    */
+/* ---------------------------------------------------------------- */
+
+:root,
+[data-theme="paper"] {
+  --paper:    #f7f4ed;
+  --paper-2:  #fdfbf6;
+  --surface:  #ffffff;
+  --ink:      #211c16;
+  --muted:    #6b6357;
+  --line:     #e6dfd1;
+  --seal:     #b53a2d;
+  --seal-deep:#8a2b22;
+  --seal-soft:#f3e2de;
+  --celadon:  #5e8b7e;
+
+  --paper-tex:
+    radial-gradient(circle at 12% 18%, rgba(181, 58, 45, 0.035), transparent 32%),
+    radial-gradient(circle at 88% 12%, rgba(94, 139, 126, 0.035), transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(201, 138, 27, 0.025), transparent 45%);
+}
+
+[data-theme="night"] {
+  --paper:    #191512;
+  --paper-2:  #2a231e;
+  --surface:  #221c18;
+  --ink:      #efe6d5;
+  --muted:    #a89f8e;
+  --line:     #3a312a;
+  --seal:     #d36758;
+  --seal-deep:#a64236;
+  --seal-soft:#4a211c;
+  --celadon:  #87b3a4;
+
+  --paper-tex:
+    radial-gradient(circle at 12% 18%, rgba(211, 103, 88, 0.05), transparent 35%),
+    radial-gradient(circle at 88% 12%, rgba(135, 179, 164, 0.04), transparent 32%),
+    radial-gradient(circle at 50% 100%, rgba(201, 138, 27, 0.04), transparent 48%);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-feature-settings: "kern", "liga", "calt";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition:
+    background-color 360ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body {
+  background-image: var(--paper-tex);
+  background-attachment: fixed;
+}
+
+/* ---------------------------------------------------------------- */
+/*  Chinese typography                                              */
+/* ---------------------------------------------------------------- */
+
+.font-cjk {
+  letter-spacing: 0.015em;
+  font-feature-settings: "palt";
+}
+
+.font-cjk-serif {
+  letter-spacing: 0.015em;
+  font-feature-settings: "palt";
+}
+
+.reading-column {
+  max-width: 38rem;
+  margin-left: auto;
+  margin-right: auto;
+  font-feature-settings: "palt", "kern";
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 1024px) {
+  .reading-column { max-width: 42rem; }
+}
+
+/* ---------------------------------------------------------------- */
+/*  Ruby pinyin annotation                                          */
+/* ---------------------------------------------------------------- */
+
+ruby.cjk-ruby {
+  ruby-position: over;
+  ruby-align: center;
+  display: inline-block;
+  line-height: inherit;
+}
+
+ruby.cjk-ruby > rt {
+  font-family: "Inter", "Source Sans 3", "Lora", system-ui, sans-serif;
+  font-size: 0.55em;
+  line-height: 1;
+  color: var(--seal);
+  font-weight: 500;
+  letter-spacing: 0;
+  opacity: 0.78;
+  transform: translateY(0.3em);
+  user-select: none;
+  font-feature-settings: normal;
+}
+
+[data-theme="night"] ruby.cjk-ruby > rt {
+  opacity: 0.85;
+}
+
+.no-ruby ruby.cjk-ruby > rt {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- */
+/*  Tap affordance for words on the reading surface                 */
+/* ---------------------------------------------------------------- */
+
+.word-tap {
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 0 1px;
+  transition:
+    background-color 140ms ease,
+    box-shadow 140ms ease,
+    color 140ms ease;
+}
+
+@media (hover: hover) {
+  .word-tap:hover {
+    background-color: color-mix(in srgb, var(--seal) 12%, transparent);
+    box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--seal) 55%, transparent);
+  }
+}
+
+.word-tap[data-flag="word"] {
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--seal) 16%, transparent);
+}
+
+.word-tap[data-flag="word"]:hover {
+  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--seal) 55%, transparent);
+}
+
+.word-tap:active,
+.word-tap[data-active="true"] {
+  background-color: color-mix(in srgb, var(--seal) 18%, transparent);
+  box-shadow: inset 0 -2px 0 var(--seal);
+}
+
+/* ---------------------------------------------------------------- */
+/*  Inline "Explain this sentence" chip                             */
+/*                                                                  */
+/*  Stays inline with the surrounding sentence so paragraphs read   */
+/*  as one block of flowing text. Sized to match small caps and     */
+/*  drops below the baseline by a hair so it doesn't push the ruby  */
+/*  row up.                                                         */
+/* ---------------------------------------------------------------- */
+.explain-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2em;
+  height: 1.2em;
+  margin: 0 0.18em 0 0.08em;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--seal) 22%, transparent);
+  background: color-mix(in srgb, var(--seal) 7%, transparent);
+  color: var(--seal);
+  vertical-align: -0.18em;
+  cursor: pointer;
+  transition: background-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+  /* Prevent the chip from being orphaned on its own line by treating it as
+     part of the previous sentence character cluster. */
+  white-space: nowrap;
+}
+
+.explain-chip:hover {
+  background: color-mix(in srgb, var(--seal) 14%, transparent);
+  box-shadow: 0 1px 2px rgba(33, 28, 22, 0.05);
+  transform: translateY(-0.5px);
+}
+
+.explain-chip:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--seal) 60%, transparent);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------- */
+/*  Scrollbar — paper-themed, quiet.                                */
+/* ---------------------------------------------------------------- */
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--muted) 35%, transparent);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in srgb, var(--muted) 60%, transparent);
+  background-clip: content-box;
+  border: 2px solid transparent;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--seal) 22%, transparent);
+  color: var(--ink);
+}
+
+:focus-visible { outline: none; }
+
+.focus-ring {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px color-mix(in srgb, var(--seal) 35%, transparent);
+}
+
+/* ---------------------------------------------------------------- */
+/*  Skeleton + refining indicators                                  */
+/* ---------------------------------------------------------------- */
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--line) 40%, transparent) 0%,
+    color-mix(in srgb, var(--line) 70%, transparent) 50%,
+    color-mix(in srgb, var(--line) 40%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.refine-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--seal);
+  opacity: 0.6;
+  animation: soft-pulse 1.8s ease-in-out infinite;
+  vertical-align: middle;
+}
+
+@keyframes soft-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.92); }
+  50%      { opacity: 1;    transform: scale(1.08); }
+}
+
+.paper-card {
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+/* Reduced motion — keep the room calm. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

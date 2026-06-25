@@ -1,0 +1,42 @@
+# ───── Dependencies ─────
+/node_modules
+/functions/node_modules
+
+# ───── Build output ─────
+.next/
+/out
+/build
+/functions/lib
+*.tsbuildinfo
+
+# ───── Local env / secrets ─────
+.env
+.env.local
+.env.*.local
+*.pem
+service-account*.json
+serviceAccount*.json
+*-firebase-adminsdk-*.json
+
+# ───── Firebase tooling ─────
+/.firebase
+firebase-debug.log
+firebase-debug.*.log
+.firebaserc.local
+
+# ───── Dictionary build inputs / output (large, regenerable) ─────
+/data-sources
+/public/dict
+
+# ───── Editor / OS ─────
+.DS_Store
+*.swp
+.idea
+.vscode
+
+# ───── Misc ─────
+/coverage
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+next-env.d.ts

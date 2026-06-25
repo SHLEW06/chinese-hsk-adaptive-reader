@@ -1,0 +1,50 @@
+{
+  "name": "chinese-adaptive-reader",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "prebuild": "node -e \"const fs=require('fs'); if(!fs.existsSync('public/dict/dictionary.min.json')){console.error('Missing public/dict/dictionary.min.json. Run: npm run fetch:dict-sources && npm run build:dict');process.exit(1)}\"",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "deploy": "firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:firestore": "firebase deploy --only firestore",
+    "fetch:dict-sources": "node scripts/fetch-dict-sources.mjs",
+    "build:dict": "node scripts/build-dictionary.mjs",
+    "build:hsk1-glossary": "node scripts/build-hsk1-glossary.mjs --level 1",
+    "check:hsk1-library": "node scripts/build-hsk1-glossary.mjs --level 1 --check",
+    "build:hsk2-glossary": "node scripts/build-hsk1-glossary.mjs --level 2",
+    "check:hsk2-library": "node scripts/build-hsk1-glossary.mjs --level 2 --check",
+    "build:hsk3-glossary": "node scripts/build-hsk1-glossary.mjs --level 3",
+    "check:hsk3-library": "node scripts/build-hsk1-glossary.mjs --level 3 --check",
+    "build:hsk4-glossary": "node scripts/build-hsk1-glossary.mjs --level 4",
+    "check:hsk4-library": "node scripts/build-hsk1-glossary.mjs --level 4 --check",
+    "build:hsk5-glossary": "node scripts/build-hsk1-glossary.mjs --level 5",
+    "check:hsk5-library": "node scripts/build-hsk1-glossary.mjs --level 5 --check",
+    "build:hsk6-glossary": "node scripts/build-hsk1-glossary.mjs --level 6",
+    "check:hsk6-library": "node scripts/build-hsk1-glossary.mjs --level 6 --check",
+    "library:check": "node scripts/normalize-library-content.mjs",
+    "library:normalize": "node scripts/normalize-library-content.mjs --write",
+    "hsk:coverage": "npm run library:check && node scripts/hsk-coverage.mjs"
+  },
+  "dependencies": {
+    "firebase": "^12.15.0",
+    "idb-keyval": "^6.2.5",
+    "lucide-react": "^0.408.0",
+    "next": "^14.2.35",
+    "pinyin-pro": "^3.28.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.6",
+    "typescript": "^5.5.3"
+  }
+}

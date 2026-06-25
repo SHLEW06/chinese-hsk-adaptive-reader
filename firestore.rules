@@ -1,0 +1,81 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: caller owns this user document
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Helper: document payload is under a size limit (bytes)
+    function docUnder(maxFields) {
+      return request.resource.data.keys().size() <= maxFields;
+    }
+
+    match /users/{userId} {
+      // User root document (not currently used, but locked to owner)
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && docUnder(30);
+
+      // Saved words — validate shape to prevent junk writes
+      match /savedWords/{wordId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+          && request.resource.data.keys().hasAll(["simplified", "pinyin", "definitions", "status"])
+          && request.resource.data.simplified is string
+          && request.resource.data.simplified.size() <= 50
+          && request.resource.data.pinyin is string
+          && request.resource.data.definitions is list
+          && request.resource.data.status in ["new", "learning", "known"]
+          && docUnder(20);
+        allow delete: if isOwner(userId);
+      }
+
+      // Learner profile
+      match /profile/{docId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId) && docUnder(30);
+      }
+
+      // Imported content — limit text size to prevent abuse
+      match /importedContent/{contentId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+          && request.resource.data.text is string
+          && request.resource.data.text.size() <= 50000
+          && docUnder(30);
+        allow delete: if isOwner(userId);
+      }
+
+      // Placement results — append-only
+      match /placementResults/{resultId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && docUnder(30);
+        allow update, delete: if false;
+      }
+
+      // Reading events — append-only
+      match /readingEvents/{eventId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && docUnder(15);
+        allow update, delete: if false;
+      }
+    }
+
+    // Sentence explanation cache — written only by the Cloud Function (Admin SDK).
+    match /sentenceExplanations/{docId} {
+      allow read, write: if false;
+    }
+
+    // Rate limit docs — written only by the Cloud Function (Admin SDK).
+    match /rateLimits/{docId} {
+      allow read, write: if false;
+    }
+
+    // Deny everything else by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

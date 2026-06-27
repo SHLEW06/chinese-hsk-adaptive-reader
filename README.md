@@ -130,7 +130,7 @@ chinese-adaptive-reader/
 ## Local setup
 
 ```bash
-git clone https://github.com/<you>/chinese-adaptive-reader.git
+git clone https://github.com/<you>/chinese-hsk-adaptive-reader.git
 cd chinese-adaptive-reader
 npm install
 

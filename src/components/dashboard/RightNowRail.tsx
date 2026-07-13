@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, BookOpen, Check } from "lucide-react";
+import { ArrowRight, BookOpen, Check, Library, X } from "lucide-react";
 import { hskColor } from "@/lib/dictionary/hsk";
 import { getCompletedReadingIds } from "@/lib/library/completedReadings";
 import type { LibraryListItem } from "@/types/library";
@@ -13,17 +13,27 @@ interface Props {
 }
 
 /**
- * Hero "right now" reading recommendations. Each item links to the static
- * library detail route so the learner sees the hand-authored translation and
- * sentence explanations — never the runtime reader, where translations can
- * be incorrect.
+ * Hero "right now" reading recommendations. Each card opens a popup that
+ * routes the learner into the static library detail route — never the
+ * runtime reader, where translations can be incorrect.
  */
 export function RightNowRail({ level, items }: Props) {
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<LibraryListItem | null>(null);
 
   useEffect(() => {
     setCompletedIds(getCompletedReadingIds());
   }, []);
+
+  // Lock body scroll while the popup is open so the modal feels modal.
+  useEffect(() => {
+    if (!selected) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [selected]);
 
   if (items.length === 0) return null;
 
@@ -65,9 +75,9 @@ export function RightNowRail({ level, items }: Props) {
         </Link>
       </div>
 
-      <Link
-        href={href(hero)}
-        prefetch={false}
+      <button
+        type="button"
+        onClick={() => setSelected(hero)}
         className="group block w-full rounded-2xl p-5 text-left shadow-paper transition-all hover:-translate-y-0.5 hover:shadow-paper-md sm:p-6"
         style={{
           background:
@@ -136,19 +146,19 @@ export function RightNowRail({ level, items }: Props) {
           className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium transition-transform group-hover:translate-x-0.5"
           style={{ color: "var(--seal)" }}
         >
-          <BookOpen size={14} />
-          Open with translation
+          <Library size={14} />
+          Open in library
           <ArrowRight size={13} />
         </div>
-      </Link>
+      </button>
 
       {rest.length > 0 && (
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
           {rest.map((item) => (
-            <Link
+            <button
               key={item.id}
-              href={href(item)}
-              prefetch={false}
+              type="button"
+              onClick={() => setSelected(item)}
               className="group rounded-xl px-4 py-3 text-left transition-all hover:-translate-y-px hover:shadow-paper"
               style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
             >
@@ -184,10 +194,154 @@ export function RightNowRail({ level, items }: Props) {
                   {item.summaryEn}
                 </div>
               )}
-            </Link>
+            </button>
           ))}
         </div>
       )}
+
+      {selected && (
+        <ReadingPopup
+          item={selected}
+          fitNote={selected.id === hero.id ? heroFit : undefined}
+          isDone={isDone(selected)}
+          href={href(selected)}
+          onClose={() => setSelected(null)}
+        />
+      )}
     </section>
+  );
+}
+
+function ReadingPopup({
+  item,
+  fitNote,
+  isDone,
+  href,
+  onClose,
+}: {
+  item: LibraryListItem;
+  fitNote?: string;
+  isDone: boolean;
+  href: string;
+  onClose: () => void;
+}) {
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-end justify-center backdrop-blur-sm animate-fade-in sm:items-center sm:p-4"
+      style={{ background: "color-mix(in srgb, var(--ink) 35%, transparent)" }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={item.titleEn || item.titleZh}
+        className="relative w-full animate-slide-up rounded-t-3xl p-6 shadow-paper-lg sm:max-w-md sm:rounded-3xl"
+        style={{
+          background: "var(--surface)",
+          border: "1px solid var(--line)",
+        }}
+      >
+        <div
+          className="sm:hidden mx-auto mb-3 h-1 w-10 rounded-full"
+          style={{ background: "var(--line)" }}
+        />
+
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div
+              className="font-cjk-serif text-4xl font-medium leading-tight tracking-tight"
+              style={{ color: "var(--ink)" }}
+            >
+              {item.titleZh}
+            </div>
+            {item.titleEn && (
+              <div
+                className="mt-1 text-[13px] italic"
+                style={{ color: "var(--muted)" }}
+              >
+                {item.titleEn}
+              </div>
+            )}
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-full p-1.5 transition-colors"
+            style={{ color: "var(--muted)" }}
+            aria-label="Close"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div
+          className="mt-4 flex flex-wrap items-center gap-2 pb-3"
+          style={{ borderBottom: "1px solid color-mix(in srgb, var(--line) 60%, transparent)" }}
+        >
+          <span
+            className="rounded-full px-2 py-0.5 text-[11px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
+            style={{ background: hskColor(item.hskLevel) }}
+          >
+            HSK {item.hskLevel}
+          </span>
+          {fitNote && (
+            <span
+              className="rounded-full px-2 py-0.5 text-[11px]"
+              style={{
+                background: "color-mix(in srgb, var(--celadon) 12%, transparent)",
+                color: "var(--celadon)",
+                border: "1px solid color-mix(in srgb, var(--celadon) 30%, transparent)",
+              }}
+            >
+              {fitNote}
+            </span>
+          )}
+          {isDone && (
+            <span
+              className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+              style={{
+                background: "color-mix(in srgb, var(--celadon) 16%, transparent)",
+                color: "var(--celadon)",
+                border: "1px solid color-mix(in srgb, var(--celadon) 35%, transparent)",
+              }}
+            >
+              <Check size={10} /> Read
+            </span>
+          )}
+          <span className="text-[11px]" style={{ color: "var(--muted)" }}>
+            · {item.category}
+          </span>
+        </div>
+
+        {item.summaryEn && (
+          <p
+            className="mt-3 font-serif text-[14.5px] italic leading-relaxed"
+            style={{ color: "var(--muted)" }}
+          >
+            {item.summaryEn}
+          </p>
+        )}
+
+        <p
+          className="mt-3 line-clamp-4 font-cjk text-[15px] leading-relaxed"
+          style={{ color: "color-mix(in srgb, var(--ink) 82%, transparent)" }}
+        >
+          {item.textPreview}
+        </p>
+
+        <div className="mt-6 flex gap-2">
+          <Link
+            href={href}
+            prefetch={false}
+            onClick={onClose}
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl py-3 text-sm font-medium text-white shadow-seal transition-all hover:-translate-y-px hover:shadow-paper-md"
+            style={{ background: "linear-gradient(180deg, var(--seal), var(--seal-deep))" }}
+          >
+            <Library size={16} />
+            Open in library
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }

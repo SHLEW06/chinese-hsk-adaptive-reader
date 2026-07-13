@@ -1,5 +1,4 @@
 {
-  "generatedAt": "2026-06-23T22:59:09.159Z",
   "hskSystem": "newest-1..6",
   "levels": [
     {
@@ -529,7 +528,7 @@
         "她": 50,
         "她们": 0,
         "太": 1,
-        "天": 700,
+        "天": 750,
         "天气": 146,
         "听": 0,
         "听见": 0,
@@ -543,11 +542,11 @@
         "喂": 0,
         "问": 350,
         "问题": 100,
-        "我": 2305,
+        "我": 2355,
         "我们": 204,
         "五": 0,
         "午饭": 1,
-        "喜欢": 151,
+        "喜欢": 201,
         "下": 50,
         "下班": 0,
         "下课": 0,
@@ -576,7 +575,7 @@
         "雪": 0,
         "要": 0,
         "也": 495,
-        "一": 606,
+        "一": 656,
         "一半": 0,
         "一点儿": 0,
         "一些": 0,
@@ -584,7 +583,7 @@
         "医生": 0,
         "医院": 1,
         "椅子": 0,
-        "有": 450,
+        "有": 400,
         "有的": 0,
         "有点儿": 0,
         "有些": 0,
@@ -600,7 +599,7 @@
         "怎么": 0,
         "怎么样": 0,
         "找": 0,
-        "这": 201,
+        "这": 251,
         "这边": 0,
         "这儿": 0,
         "这里": 0,
@@ -647,15 +646,15 @@
       "overusedWords": [
         {
           "word": "我",
-          "count": 2305
+          "count": 2355
         },
         {
           "word": "天",
-          "count": 700
+          "count": 750
         },
         {
           "word": "一",
-          "count": 606
+          "count": 656
         },
         {
           "word": "很",
@@ -679,7 +678,7 @@
         },
         {
           "word": "有",
-          "count": 450
+          "count": 400
         },
         {
           "word": "问",
@@ -704,6 +703,10 @@
         {
           "word": "想",
           "count": 252
+        },
+        {
+          "word": "这",
+          "count": 251
         },
         {
           "word": "上",
@@ -746,7 +749,7 @@
           "count": 202
         },
         {
-          "word": "这",
+          "word": "喜欢",
           "count": 201
         },
         {
@@ -807,10 +810,6 @@
         },
         {
           "word": "是",
-          "count": 151
-        },
-        {
-          "word": "喜欢",
           "count": 151
         },
         {
@@ -12948,7 +12947,7 @@
         "似乎": 0,
         "式": 52,
         "事故": 0,
-        "事件": 50,
+        "事件": 49,
         "事实": 0,
         "事物": 100,
         "事先": 0,
@@ -13148,7 +13147,7 @@
         "现代": 104,
         "现代化": 2,
         "现实": 2,
-        "现象": 150,
+        "现象": 151,
         "现状": 0,
         "线路": 0,
         "限制": 0,
@@ -13552,6 +13551,10 @@
           "count": 152
         },
         {
+          "word": "现象",
+          "count": 151
+        },
+        {
           "word": "反",
           "count": 150
         },
@@ -13569,10 +13572,6 @@
         },
         {
           "word": "同",
-          "count": 150
-        },
-        {
-          "word": "现象",
           "count": 150
         },
         {
@@ -13844,10 +13843,6 @@
           "count": 50
         },
         {
-          "word": "事件",
-          "count": 50
-        },
-        {
           "word": "体验",
           "count": 50
         },
@@ -13918,6 +13913,10 @@
         {
           "word": "资源",
           "count": 50
+        },
+        {
+          "word": "事件",
+          "count": 49
         }
       ],
       "passageCount": 50
@@ -15528,7 +15527,7 @@
         "罪"
       ],
       "cumulativeTotal": 5181,
-      "cumulativeCovered": 693,
+      "cumulativeCovered": 694,
       "cumulativeCoveragePct": 13.4,
       "cumulativeMissing": [
         "爱",
@@ -16721,7 +16720,6 @@
         "内",
         "内容",
         "内心",
-        "能否",
         "年底",
         "年龄",
         "农村",
@@ -21949,7 +21947,7 @@
       "id": "lib-h1-my-family",
       "slug": "my-family",
       "hskLevel": 1,
-      "chars": 602,
+      "chars": 608,
       "distinctWords": 107,
       "aboveLevelWords": [
         "不错",
@@ -22019,7 +22017,7 @@
       "id": "lib-h1-good-morning",
       "slug": "good-morning",
       "hskLevel": 1,
-      "chars": 601,
+      "chars": 607,
       "distinctWords": 108,
       "aboveLevelWords": [
         "包",
@@ -22091,7 +22089,7 @@
       "id": "lib-h1-buying-apples",
       "slug": "buying-apples",
       "hskLevel": 1,
-      "chars": 600,
+      "chars": 606,
       "distinctWords": 107,
       "aboveLevelWords": [
         "不错",
@@ -22164,7 +22162,7 @@
       "id": "lib-h1-what-day",
       "slug": "what-day-is-today",
       "hskLevel": 1,
-      "chars": 596,
+      "chars": 602,
       "distinctWords": 104,
       "aboveLevelWords": [
         "不错",
@@ -22234,7 +22232,7 @@
       "id": "lib-h1-i-am-chinese-student",
       "slug": "i-am-a-chinese-student",
       "hskLevel": 1,
-      "chars": 605,
+      "chars": 611,
       "distinctWords": 108,
       "aboveLevelWords": [
         "不错",
@@ -22307,7 +22305,7 @@
       "id": "lib-h1-drink-water",
       "slug": "drink-water",
       "hskLevel": 1,
-      "chars": 601,
+      "chars": 607,
       "distinctWords": 107,
       "aboveLevelWords": [
         "不错",
@@ -22378,7 +22376,7 @@
       "id": "lib-h1-my-cat",
       "slug": "my-cat",
       "hskLevel": 1,
-      "chars": 594,
+      "chars": 600,
       "distinctWords": 106,
       "aboveLevelWords": [
         "不错",
@@ -22447,7 +22445,7 @@
       "id": "lib-h1-go-to-beijing",
       "slug": "go-to-beijing",
       "hskLevel": 1,
-      "chars": 601,
+      "chars": 607,
       "distinctWords": 108,
       "aboveLevelWords": [
         "包",
@@ -22520,7 +22518,7 @@
       "id": "lib-h1-009-my-morning",
       "slug": "hsk1-my-morning",
       "hskLevel": 1,
-      "chars": 594,
+      "chars": 600,
       "distinctWords": 104,
       "aboveLevelWords": [
         "不错",
@@ -22593,7 +22591,7 @@
       "id": "lib-h1-010-my-family",
       "slug": "hsk1-my-family",
       "hskLevel": 1,
-      "chars": 594,
+      "chars": 600,
       "distinctWords": 105,
       "aboveLevelWords": [
         "不错",
@@ -22664,7 +22662,7 @@
       "id": "lib-h1-011-a-day-going-to-school",
       "slug": "hsk1-a-day-going-to-school",
       "hskLevel": 1,
-      "chars": 596,
+      "chars": 602,
       "distinctWords": 105,
       "aboveLevelWords": [
         "不错",
@@ -22737,7 +22735,7 @@
       "id": "lib-h1-012-my-small-room",
       "slug": "hsk1-my-small-room",
       "hskLevel": 1,
-      "chars": 603,
+      "chars": 609,
       "distinctWords": 107,
       "aboveLevelWords": [
         "不错",
@@ -22808,7 +22806,7 @@
       "id": "lib-h1-013-today-is-hot",
       "slug": "hsk1-today-is-hot",
       "hskLevel": 1,
-      "chars": 596,
+      "chars": 602,
       "distinctWords": 106,
       "aboveLevelWords": [
         "不错",
@@ -22878,7 +22876,7 @@
       "id": "lib-h1-014-drinking-water-with-a-friend",
       "slug": "hsk1-drinking-water-with-a-friend",
       "hskLevel": 1,
-      "chars": 604,
+      "chars": 610,
       "distinctWords": 108,
       "aboveLevelWords": [
         "包",
@@ -22950,7 +22948,7 @@
       "id": "lib-h1-015-buying-things-at-a-store",
       "slug": "hsk1-buying-things-at-a-store",
       "hskLevel": 1,
-      "chars": 603,
+      "chars": 609,
       "distinctWords": 109,
       "aboveLevelWords": [
         "不错",
@@ -23025,7 +23023,7 @@
       "id": "lib-h1-016-i-like-rice",
       "slug": "hsk1-i-like-rice",
       "hskLevel": 1,
-      "chars": 602,
+      "chars": 608,
       "distinctWords": 108,
       "aboveLevelWords": [
         "不错",
@@ -23097,7 +23095,7 @@
       "id": "lib-h1-017-a-busy-monday",
       "slug": "hsk1-a-busy-monday",
       "hskLevel": 1,
-      "chars": 595,
+      "chars": 601,
       "distinctWords": 106,
       "aboveLevelWords": [
         "不错",
@@ -23168,7 +23166,7 @@
       "id": "lib-h1-018-eight-in-the-morning",
       "slug": "hsk1-eight-in-the-morning",
       "hskLevel": 1,
-      "chars": 602,
+      "chars": 608,
       "distinctWords": 107,
       "aboveLevelWords": [
         "不错",
@@ -23239,7 +23237,7 @@
       "id": "lib-h1-019-my-chinese-teacher",
       "slug": "hsk1-my-chinese-teacher",
       "hskLevel": 1,
-      "chars": 595,
+      "chars": 601,
       "distinctWords": 108,
       "aboveLevelWords": [
         "不错",
@@ -23308,7 +23306,7 @@
       "id": "lib-h1-020-i-want-to-drink-tea",
       "slug": "hsk1-i-want-to-drink-tea",
       "hskLevel": 1,
-      "chars": 602,
+      "chars": 608,
       "distinctWords": 108,
       "aboveLevelWords": [
         "包",
@@ -23380,7 +23378,7 @@
       "id": "lib-h1-021-my-parents-work",
       "slug": "hsk1-my-parents-work",
       "hskLevel": 1,
-      "chars": 594,
+      "chars": 600,
       "distinctWords": 105,
       "aboveLevelWords": [
         "不错",
@@ -23453,7 +23451,7 @@
       "id": "lib-h1-022-going-to-a-friends-home",
       "slug": "hsk1-going-to-a-friends-home",
       "hskLevel": 1,
-      "chars": 594,
+      "chars": 600,
       "distinctWords": 106,
       "aboveLevelWords": [
         "不错",
@@ -23524,7 +23522,7 @@
       "id": "lib-h1-023-eating-at-school",
       "slug": "hsk1-eating-at-school",
       "hskLevel": 1,
-      "chars": 596,
+      "chars": 602,
       "distinctWords": 104,
       "aboveLevelWords": [
         "不错",
@@ -23597,7 +23595,7 @@
       "id": "lib-h1-024-today-is-not-too-cold",
       "slug": "hsk1-today-is-not-too-cold",
       "hskLevel": 1,
-      "chars": 596,
+      "chars": 602,
       "distinctWords": 105,
       "aboveLevelWords": [
         "不错",
@@ -23667,7 +23665,7 @@
       "id": "lib-h1-025-my-cat-and-dog",
       "slug": "hsk1-my-cat-and-dog",
       "hskLevel": 1,
-      "chars": 604,
+      "chars": 610,
       "distinctWords": 108,
       "aboveLevelWords": [
         "不错",
@@ -23737,7 +23735,7 @@
       "id": "lib-h1-026-reading-and-writing",
       "slug": "hsk1-reading-and-writing",
       "hskLevel": 1,
-      "chars": 603,
+      "chars": 609,
       "distinctWords": 109,
       "aboveLevelWords": [
         "包",
@@ -23809,7 +23807,7 @@
       "id": "lib-h1-027-i-can-speak-a-little-chinese",
       "slug": "hsk1-i-can-speak-a-little-chinese",
       "hskLevel": 1,
-      "chars": 595,
+      "chars": 601,
       "distinctWords": 104,
       "aboveLevelWords": [
         "不错",
@@ -23881,7 +23879,7 @@
       "id": "lib-h1-028-watching-a-movie-together",
       "slug": "hsk1-watching-a-movie-together",
       "hskLevel": 1,
-      "chars": 595,
+      "chars": 601,
       "distinctWords": 107,
       "aboveLevelWords": [
         "不错",
@@ -23951,7 +23949,7 @@
       "id": "lib-h1-029-a-ten-yuan-lunch",
       "slug": "hsk1-a-ten-yuan-lunch",
       "hskLevel": 1,
-      "chars": 598,
+      "chars": 604,
       "distinctWords": 106,
       "aboveLevelWords": [
         "不错",
@@ -24024,7 +24022,7 @@
       "id": "lib-h1-030-sunday-at-home",
       "slug": "hsk1-sunday-at-home",
       "hskLevel": 1,
-      "chars": 596,
+      "chars": 602,
       "distinctWords": 106,
       "aboveLevelWords": [
         "不错",
@@ -24095,7 +24093,7 @@
       "id": "lib-h1-031-my-small-desk",
       "slug": "hsk1-my-small-desk",
       "hskLevel": 1,
-      "chars": 595,
+      "chars": 601,
       "distinctWords": 105,
       "aboveLevelWords": [
         "不错",
@@ -24165,7 +24163,7 @@
       "id": "lib-h1-032-the-teacher-asks-me-a-questi",
       "slug": "hsk1-the-teacher-asks-me-a-question",
       "hskLevel": 1,
-      "chars": 604,
+      "chars": 610,
       "distinctWords": 108,
       "aboveLevelWords": [
         "包",
@@ -24237,7 +24235,7 @@
       "id": "lib-h1-033-going-to-the-hospital-to-see",
       "slug": "hsk1-going-to-the-hospital-to-see-mom",
       "hskLevel": 1,
-      "chars": 597,
+      "chars": 603,
       "distinctWords": 106,
       "aboveLevelWords": [
         "不错",
@@ -24310,7 +24308,7 @@
       "id": "lib-h1-034-a-cup-of-hot-water",
       "slug": "hsk1-a-cup-of-hot-water",
       "hskLevel": 1,
-      "chars": 601,
+      "chars": 607,
       "distinctWords": 106,
       "aboveLevelWords": [
         "不错",
@@ -24381,7 +24379,7 @@
       "id": "lib-h1-035-twenty-people-in-our-class",
       "slug": "hsk1-twenty-people-in-our-class",
       "hskLevel": 1,
-      "chars": 597,
+      "chars": 603,
       "distinctWords": 106,
       "aboveLevelWords": [
         "班",
@@ -24456,7 +24454,7 @@
       "id": "lib-h1-036-my-new-classmate",
       "slug": "hsk1-my-new-classmate",
       "hskLevel": 1,
-      "chars": 594,
+      "chars": 600,
       "distinctWords": 109,
       "aboveLevelWords": [
         "不错",
@@ -24527,7 +24525,7 @@
       "id": "lib-h1-037-buying-fruit",
       "slug": "hsk1-buying-fruit",
       "hskLevel": 1,
-      "chars": 602,
+      "chars": 608,
       "distinctWords": 108,
       "aboveLevelWords": [
         "不错",
@@ -24597,7 +24595,7 @@
       "id": "lib-h1-038-taking-a-car-to-school",
       "slug": "hsk1-taking-a-car-to-school",
       "hskLevel": 1,
-      "chars": 603,
+      "chars": 609,
       "distinctWords": 110,
       "aboveLevelWords": [
         "包",
@@ -24669,7 +24667,7 @@
       "id": "lib-h1-039-i-am-very-happy",
       "slug": "hsk1-i-am-very-happy",
       "hskLevel": 1,
-      "chars": 601,
+      "chars": 607,
       "distinctWords": 105,
       "aboveLevelWords": [
         "不错",
@@ -24742,7 +24740,7 @@
       "id": "lib-h1-040-a-friends-birthday",
       "slug": "hsk1-a-friends-birthday",
       "hskLevel": 1,
-      "chars": 602,
+      "chars": 608,
       "distinctWords": 107,
       "aboveLevelWords": [
         "不错",
@@ -24814,7 +24812,7 @@
       "id": "lib-h1-041-i-do-not-work-today",
       "slug": "hsk1-i-do-not-work-today",
       "hskLevel": 1,
-      "chars": 595,
+      "chars": 601,
       "distinctWords": 106,
       "aboveLevelWords": [
         "不错",
@@ -24887,7 +24885,7 @@
       "id": "lib-h1-042-i-love-my-city",
       "slug": "hsk1-i-love-my-city",
       "hskLevel": 1,
-      "chars": 597,
+      "chars": 603,
       "distinctWords": 107,
       "aboveLevelWords": [
         "不错",
@@ -24961,7 +24959,7 @@
       "id": "lib-h1-043-watching-people-in-the-park",
       "slug": "hsk1-watching-people-in-the-park",
       "hskLevel": 1,
-      "chars": 594,
+      "chars": 600,
       "distinctWords": 104,
       "aboveLevelWords": [
         "不错",
@@ -25034,7 +25032,7 @@
       "id": "lib-h1-044-my-older-sister-and-me",
       "slug": "hsk1-my-older-sister-and-me",
       "hskLevel": 1,
-      "chars": 595,
+      "chars": 601,
       "distinctWords": 106,
       "aboveLevelWords": [
         "包",
@@ -25105,7 +25103,7 @@
       "id": "lib-h1-045-not-difficult-at-all",
       "slug": "hsk1-not-difficult-at-all",
       "hskLevel": 1,
-      "chars": 602,
+      "chars": 608,
       "distinctWords": 105,
       "aboveLevelWords": [
         "不错",
@@ -25178,7 +25176,7 @@
       "id": "lib-h1-046-i-want-to-go-home",
       "slug": "hsk1-i-want-to-go-home",
       "hskLevel": 1,
-      "chars": 601,
+      "chars": 607,
       "distinctWords": 107,
       "aboveLevelWords": [
         "不错",
@@ -25249,7 +25247,7 @@
       "id": "lib-h1-047-what-are-we-eating",
       "slug": "hsk1-what-are-we-eating",
       "hskLevel": 1,
-      "chars": 595,
+      "chars": 601,
       "distinctWords": 106,
       "aboveLevelWords": [
         "不错",
@@ -25321,7 +25319,7 @@
       "id": "lib-h1-048-what-is-todays-date",
       "slug": "hsk1-what-is-todays-date",
       "hskLevel": 1,
-      "chars": 595,
+      "chars": 601,
       "distinctWords": 108,
       "aboveLevelWords": [
         "不错",
@@ -25391,7 +25389,7 @@
       "id": "lib-h1-049-who-is-this-person",
       "slug": "hsk1-who-is-this-person",
       "hskLevel": 1,
-      "chars": 597,
+      "chars": 603,
       "distinctWords": 106,
       "aboveLevelWords": [
         "不错",
@@ -25462,7 +25460,7 @@
       "id": "lib-h1-050-i-bought-a-cup",
       "slug": "hsk1-i-bought-a-cup",
       "hskLevel": 1,
-      "chars": 598,
+      "chars": 604,
       "distinctWords": 109,
       "aboveLevelWords": [
         "包",
@@ -38858,8 +38856,8 @@
       "id": "lib-h5-screen-time",
       "slug": "screen-time-debate",
       "hskLevel": 5,
-      "chars": 1156,
-      "distinctWords": 409,
+      "chars": 1151,
+      "distinctWords": 407,
       "aboveLevelWords": [
         "本身",
         "才能",
@@ -41422,8 +41420,8 @@
       "id": "lib-h6-tang-poem-essay",
       "slug": "tang-poetry-still-relevant",
       "hskLevel": 6,
-      "chars": 1368,
-      "distinctWords": 539,
+      "chars": 1363,
+      "distinctWords": 538,
       "aboveLevelWords": []
     },
     {
@@ -41454,8 +41452,8 @@
       "id": "lib-h6-language-and-thought",
       "slug": "language-and-thought",
       "hskLevel": 6,
-      "chars": 1370,
-      "distinctWords": 543,
+      "chars": 1366,
+      "distinctWords": 544,
       "aboveLevelWords": []
     },
     {

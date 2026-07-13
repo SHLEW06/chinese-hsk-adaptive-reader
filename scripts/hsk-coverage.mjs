@@ -6,7 +6,7 @@
  *   data-sources/hsk-complete.json
  *   src/data/library/hsk{1..6}.json
  *
- * Writes:
+ * Generates or checks:
  *   src/data/hskCoverageReport.json
  *
  * Coverage logic uses `newest-N` tags (HSK 3.0 9-level standard, exposing 1-6).
@@ -16,6 +16,10 @@
  *
  * Runs structural validation before computing coverage. Exits non-zero if any
  * required field is missing, ids/slugs collide, or a level has zero passages.
+ *
+ * Usage:
+ *   node scripts/hsk-coverage.mjs          # regenerate the committed report
+ *   node scripts/hsk-coverage.mjs --check  # fail if the report is stale
  */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -26,6 +30,7 @@ const ROOT = join(__dirname, "..");
 const DATA_SOURCES = join(ROOT, "data-sources");
 const LIBRARY_DIR = join(ROOT, "src", "data", "library");
 const OUT = join(ROOT, "src", "data", "hskCoverageReport.json");
+const check = process.argv.includes("--check");
 
 const HSK_LEVELS = [1, 2, 3, 4, 5, 6];
 const REQUIRED_FIELDS = [
@@ -278,14 +283,24 @@ function main() {
   const { levels, passages } = buildLevelCoverage(levelSets, items);
 
   const report = {
-    generatedAt: new Date().toISOString(),
     hskSystem: "newest-1..6",
     levels,
     passages,
   };
 
-  writeFileSync(OUT, JSON.stringify(report, null, 2));
-  console.log(`\nWrote ${OUT}`);
+  const serialized = `${JSON.stringify(report, null, 2)}\n`;
+  if (check) {
+    const committed = existsSync(OUT) ? readFileSync(OUT, "utf-8") : null;
+    if (committed !== serialized) {
+      console.error(`\nHSK coverage report is stale: ${OUT}`);
+      console.error("Run: npm run hsk:coverage and commit the updated report.");
+      process.exit(1);
+    }
+    console.log(`\nCoverage report is current: ${OUT}`);
+  } else {
+    writeFileSync(OUT, serialized);
+    console.log(`\nWrote ${OUT}`);
+  }
 
   console.log("\nCoverage summary:");
   console.log("  Level | Passages | Exclusive cov.  | Cumulative cov.");

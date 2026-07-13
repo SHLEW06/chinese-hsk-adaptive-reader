@@ -151,6 +151,16 @@ committed; a `prebuild` guard fails the build with a clear message if you
 haven't generated it. Once built it's ~5–10 MB and is fetched lazily on first
 read.
 
+## Validation and contributing
+
+Run deterministic unit tests with `npm run test:run`. After the local generated
+artifacts above exist, run the complete validation suite with `npm run validate`.
+Pull requests targeting `main` run linting, type checking, unit tests, HSK
+coverage validation, and a production build in GitHub Actions.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, branch conventions, generated
+HSK coverage policy, and issue reporting guidance.
+
 ### Firebase setup
 
 1. Create a project at [console.firebase.google.com](https://console.firebase.google.com/).

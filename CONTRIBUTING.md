@@ -40,6 +40,8 @@ npm run validate
 The web application and Firebase Functions are separate TypeScript packages.
 Install both lockfiles before validation; the root package does not own
 `firebase-admin` or `firebase-functions`.
+CI uses non-secret placeholder Firebase Web SDK configuration for the static
+production build; repository validation does not require Firebase credentials.
 
 `npm run hsk:coverage` deliberately rewrites
 `src/data/hskCoverageReport.json`. Run it after changes to library content or

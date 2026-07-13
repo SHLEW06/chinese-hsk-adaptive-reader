@@ -13,15 +13,21 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            functions/package-lock.json
 
-      - name: Install dependencies
+      - name: Install web app dependencies
         run: npm ci
+
+      - name: Install Firebase Functions dependencies
+        run: npm ci --prefix functions
 
       - name: Fetch generated-data inputs
         run: npm run fetch:dict-sources
@@ -32,8 +38,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Type check
+      - name: Type check web app
         run: npm run typecheck
+
+      - name: Type check Firebase Functions
+        run: npm run typecheck:functions
 
       - name: Unit tests
         run: npm run test:run

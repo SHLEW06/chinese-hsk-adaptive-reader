@@ -7,6 +7,7 @@ artifacts before running a production build or coverage validation:
 
 ```bash
 npm ci
+npm ci --prefix functions
 npm run fetch:dict-sources
 npm run build:dict
 ```
@@ -25,13 +26,20 @@ template. Automated checks run on pull requests targeting `main`.
 
 ```bash
 npm run lint
+# Checks the Next.js application with the root TypeScript configuration.
 npm run typecheck
+# Checks Firebase Functions with functions/tsconfig.json and its dependencies.
+npm run typecheck:functions
 npm run test:run
 npm run check:hsk-coverage
 npm run build
-# Runs the same local validation sequence after generated prerequisites exist.
+# Runs both TypeScript scopes and the complete validation sequence.
 npm run validate
 ```
+
+The web application and Firebase Functions are separate TypeScript packages.
+Install both lockfiles before validation; the root package does not own
+`firebase-admin` or `firebase-functions`.
 
 `npm run hsk:coverage` deliberately rewrites
 `src/data/hskCoverageReport.json`. Run it after changes to library content or

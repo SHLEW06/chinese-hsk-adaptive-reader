@@ -153,10 +153,21 @@ read.
 
 ## Validation and contributing
 
-Run deterministic unit tests with `npm run test:run`. After the local generated
-artifacts above exist, run the complete validation suite with `npm run validate`.
-Pull requests targeting `main` run linting, type checking, unit tests, HSK
-coverage validation, and a production build in GitHub Actions.
+The web application and Firebase Functions have separate dependency and
+TypeScript scopes. Install both lockfiles, then validate each scope directly or
+run the complete suite after the generated artifacts above exist:
+
+```bash
+npm ci
+npm ci --prefix functions
+npm run typecheck             # Next.js application
+npm run typecheck:functions   # Firebase Functions
+npm run validate              # Both scopes plus all repository checks
+```
+
+Pull requests targeting `main` run linting, both TypeScript checks,
+deterministic unit tests, HSK coverage validation, and a production build in
+GitHub Actions.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, branch conventions, generated
 HSK coverage policy, and issue reporting guidance.

@@ -45,9 +45,11 @@ production build; repository validation does not require Firebase credentials.
 
 `npm run hsk:coverage` deliberately rewrites
 `src/data/hskCoverageReport.json`. Run it after changes to library content or
-the HSK source data, inspect and commit the meaningful report diff, then run
-`npm run check:hsk-coverage`. The check command never writes the report and
-fails when the committed file is stale.
+the pinned HSK source revision in `scripts/fetch-dict-sources.mjs`, inspect and
+commit the meaningful report diff, then run `npm run check:hsk-coverage`. The
+check command never writes the report and fails when the committed file is
+stale. Pull-request validation uses that immutable HSK revision so unrelated
+upstream changes cannot invalidate the committed report.
 
 ## Reporting and proposing work
 

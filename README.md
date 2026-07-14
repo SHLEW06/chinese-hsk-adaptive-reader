@@ -151,6 +151,27 @@ committed; a `prebuild` guard fails the build with a clear message if you
 haven't generated it. Once built it's ~5–10 MB and is fetched lazily on first
 read.
 
+## Validation and contributing
+
+The web application and Firebase Functions have separate dependency and
+TypeScript scopes. Install both lockfiles, then validate each scope directly or
+run the complete suite after the generated artifacts above exist:
+
+```bash
+npm ci
+npm ci --prefix functions
+npm run typecheck             # Next.js application
+npm run typecheck:functions   # Firebase Functions
+npm run validate              # Both scopes plus all repository checks
+```
+
+Pull requests targeting `main` run linting, both TypeScript checks,
+deterministic unit tests, HSK coverage validation, and a production build in
+GitHub Actions.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, branch conventions, generated
+HSK coverage policy, and issue reporting guidance.
+
 ### Firebase setup
 
 1. Create a project at [console.firebase.google.com](https://console.firebase.google.com/).

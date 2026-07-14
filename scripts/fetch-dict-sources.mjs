@@ -19,8 +19,9 @@ const OUT_DIR = join(ROOT, "data-sources");
 
 const CEDICT_URL =
   "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz";
+const HSK_SOURCE_COMMIT = "7ac65bf1a6387d35f1ade478906172a19311c7f9";
 const HSK_URL =
-  "https://raw.githubusercontent.com/drkameleon/complete-hsk-vocabulary/main/complete.json";
+  `https://raw.githubusercontent.com/drkameleon/complete-hsk-vocabulary/${HSK_SOURCE_COMMIT}/complete.json`;
 
 const force = process.argv.includes("--force");
 

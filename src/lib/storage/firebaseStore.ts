@@ -11,6 +11,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
+import type { CalibrationState } from "@/types/calibration";
 import type { ContentItem } from "@/types/content";
 import type { LearnerProfile } from "@/types/learner";
 import type { SavedWord } from "@/types/savedWord";
@@ -99,6 +100,25 @@ export const saveLearnerProfile = async (userId: string, profile: LearnerProfile
   invalidateCache(userId, "profile");
 };
 
+/* ---- Vocabulary calibration ---- */
+
+export async function getCalibrationState(userId: string): Promise<CalibrationState | null> {
+  const key = cacheKey(userId, "calibration");
+  const cached = getFromCache<CalibrationState | null>(key);
+  if (cached !== undefined) return cached;
+  const snapshot = await getDoc(doc(db, "users", userId, "calibration", "main"));
+  const state = snapshot.exists() ? (snapshot.data() as CalibrationState) : null;
+  setCache(key, state);
+  return state;
+}
+
+// Deliberately NOT a merge write: reset and recalibration must be able to
+// remove baseline/result keys, which merge semantics would resurrect.
+export const saveCalibrationState = async (userId: string, state: CalibrationState) => {
+  await setDoc(doc(db, "users", userId, "calibration", "main"), state);
+  invalidateCache(userId, "calibration");
+};
+
 /* ---- Imported content ---- */
 
 export async function getImportedContent(userId: string): Promise<ContentItem[]> {
@@ -139,6 +159,7 @@ export async function batchSyncToCloud(
   content: ContentItem[],
   results: LearnerProfile[],
   profile: LearnerProfile | null,
+  calibration: CalibrationState | null = null,
 ) {
   // Firestore batches are limited to 500 ops each
   const MAX_BATCH = 500;
@@ -173,6 +194,10 @@ export async function batchSyncToCloud(
   if (profile) {
     await addOp((b) => b.set(doc(db, "users", userId, "profile", "main"), { ...profile, updatedAt: serverTimestamp() }, { merge: true }));
   }
+  if (calibration) {
+    // Full replace (not merge) so stale baseline/result keys cannot survive.
+    await addOp((b) => b.set(doc(db, "users", userId, "calibration", "main"), calibration));
+  }
 
   await flush();
 
@@ -180,4 +205,5 @@ export async function batchSyncToCloud(
   invalidateCache(userId, "savedWords");
   invalidateCache(userId, "profile");
   invalidateCache(userId, "importedContent");
+  invalidateCache(userId, "calibration");
 }

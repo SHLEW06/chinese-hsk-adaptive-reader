@@ -14,12 +14,17 @@ export function SyncLocalProgressButton() {
     if (!window.confirm("Upload browser-only progress that does not already exist in your account? Existing cloud saved words, imported content, and profile will be kept. Local data will not be deleted.")) return;
     setStatus("Syncing…");
     try {
-      const [words, profile, content, results, cloudWords, cloudContent, cloudProfile] = await Promise.all([
-        localStore.getSavedWords(), localStore.getProfile(), localStore.getImportedContent(), localStore.getPlacementResults(),
-        firebaseStore.getSavedWords(user.uid), firebaseStore.getImportedContent(user.uid), firebaseStore.getLearnerProfile(user.uid),
+      const [words, profile, content, results, calibration, cloudWords, cloudContent, cloudProfile, cloudCalibration] = await Promise.all([
+        localStore.getSavedWords(), localStore.getProfile(), localStore.getImportedContent(), localStore.getPlacementResults(), localStore.getCalibration(),
+        firebaseStore.getSavedWords(user.uid), firebaseStore.getImportedContent(user.uid), firebaseStore.getLearnerProfile(user.uid), firebaseStore.getCalibrationState(user.uid),
       ]);
       const newWords = words.filter((word) => !new Set(cloudWords.map((w) => w.id)).has(word.id));
       const newContent = content.filter((item) => !new Set(cloudContent.map((c) => c.id)).has(item.id));
+      // Only upload local calibration when the cloud copy is absent or older —
+      // never clobber a newer cloud calibration with a stale browser copy.
+      const localCalibrationIsNewer =
+        !!calibration && calibration.status !== "notStarted" &&
+        (!cloudCalibration || (calibration.updatedAt ?? "") > (cloudCalibration.updatedAt ?? ""));
 
       // Use batched writes instead of individual operations — reduces Firestore write ops
       await firebaseStore.batchSyncToCloud(
@@ -28,6 +33,7 @@ export function SyncLocalProgressButton() {
         newContent,
         results,
         profile && !cloudProfile ? profile : null,
+        localCalibrationIsNewer ? calibration : null,
       );
       setStatus("Local progress uploaded.");
     } catch {

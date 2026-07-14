@@ -38,6 +38,15 @@ service cloud.firestore {
         allow write: if isOwner(userId) && docUnder(30);
       }
 
+      // Vocabulary calibration state (single "main" doc per user)
+      match /calibration/{docId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId)
+          && request.resource.data.schemaVersion == 1
+          && request.resource.data.status in ["notStarted", "inProgress", "completed"]
+          && docUnder(30);
+      }
+
       // Imported content — limit text size to prevent abuse
       match /importedContent/{contentId} {
         allow read: if isOwner(userId);

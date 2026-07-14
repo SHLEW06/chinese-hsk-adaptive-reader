@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -9,8 +9,10 @@ import { getByHskLevel, getCommonNonHsk, getEntry } from "@/lib/dictionary/dicti
 import { StudySession } from "@/components/vocabulary/StudySession";
 import { loadStudySettings } from "@/lib/hsk-study/storage";
 import { buildMixedPool } from "@/lib/hsk-study/mixedDeck";
+import { applyVerificationOutcomes } from "@/lib/calibration/state";
 import { getStorageProvider } from "@/lib/storage/storageProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
+import type { CalibrationState } from "@/types/calibration";
 import type { DeckKey } from "@/types/hskStudy";
 import type { WordEntry } from "@/types/dictionary";
 import type { SavedWord } from "@/types/savedWord";
@@ -65,6 +67,7 @@ function StudyInner() {
   const { user } = useAuth();
   const [saved, setSaved] = useState<SavedWord[] | null>(null);
   const [profile, setProfile] = useState<LearnerProfile | null>(null);
+  const [calibration, setCalibration] = useState<CalibrationState | null>(null);
 
   // Lazy-load saved words + profile for the "saved" and "mixed" decks.
   useEffect(() => {
@@ -83,22 +86,57 @@ function StudyInner() {
     };
   }, [deck, user]);
 
+  // Calibration applies to every deck: it filters baseline-known words out
+  // of the new queue and surfaces due verification check-ins.
+  const calibrationRef = useRef<CalibrationState | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void getStorageProvider(user)
+      .getCalibrationState()
+      .then((state) => {
+        if (cancelled) return;
+        calibrationRef.current = state;
+        setCalibration(state);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  // Persist through a ref, not state: a state update here would rebuild the
+  // pool and silently restart the finished session. Staleness is safe — the
+  // verified word now has genuine SRS state, which always outranks the
+  // baseline in deck selection.
+  const handleVerificationOutcomes = useCallback(
+    (outcomes: Record<string, boolean>) => {
+      const prev = calibrationRef.current;
+      if (!prev) return;
+      const next = applyVerificationOutcomes(prev, outcomes, new Date());
+      if (next !== prev) {
+        calibrationRef.current = next;
+        void getStorageProvider(user).saveCalibrationState(next);
+      }
+    },
+    [user],
+  );
+
   const settings = useMemo(() => loadStudySettings(), []);
 
   const pool = useMemo<WordEntry[]>(() => {
     if (deck === "saved") return (saved ?? []).map(savedToEntry);
     if (deck === "mixed") {
-      if (saved === null) return [];
+      if (saved === null || calibration === null) return [];
       return buildMixedPool({
         level: profile?.vocabularyLevel ?? 2,
         saved,
+        calibration,
       });
     }
     return poolFor(deck);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deck, ready, size, saved, profile]);
+  }, [deck, ready, size, saved, profile, calibration]);
 
-  if ((deck === "saved" || deck === "mixed") && saved === null) {
+  if (calibration === null || ((deck === "saved" || deck === "mixed") && saved === null)) {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center">
         <Link
@@ -109,7 +147,7 @@ function StudyInner() {
         </Link>
         <div className="mt-10 text-sm text-muted">
           <div className="mx-auto mb-3 h-8 w-8 animate-pulse rounded-full bg-seal-soft" />
-          {deck === "mixed" ? "Building your deck…" : "Loading saved words…"}
+          {deck === "mixed" ? "Building your deck…" : "Loading your study state…"}
         </div>
       </div>
     );
@@ -139,6 +177,8 @@ function StudyInner() {
       deckLabel={DECK_LABELS[deck]}
       newPerSession={settings.maxNew}
       maxReviews={settings.maxReviews}
+      calibration={calibration}
+      onVerificationOutcomes={handleVerificationOutcomes}
     />
   );
 }

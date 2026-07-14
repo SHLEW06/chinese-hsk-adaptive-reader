@@ -13,6 +13,7 @@ import { SyncLocalProgressButton } from "@/components/auth/SyncLocalProgressButt
 import { recommendLibraryForLevel } from "@/lib/content/recommend";
 import { dueCounts } from "@/lib/hsk-study/mixedDeck";
 import { getCompletedReadingIds } from "@/lib/library/completedReadings";
+import type { CalibrationState } from "@/types/calibration";
 import type { LearnerProfile } from "@/types/learner";
 import type { SavedWord } from "@/types/savedWord";
 import type { LibraryListItem } from "@/types/library";
@@ -25,19 +26,22 @@ export function DashboardView({ libraryItems }: Props) {
   const { user } = useAuth();
   const [profile, setProfile] = useState<LearnerProfile | null>(null);
   const [words, setWords] = useState<SavedWord[]>([]);
+  const [calibration, setCalibration] = useState<CalibrationState | null>(null);
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const storage = getStorageProvider(user);
-      const [nextProfile, nextWords] = await Promise.all([
+      const [nextProfile, nextWords, nextCalibration] = await Promise.all([
         storage.getLearnerProfile(),
         storage.getSavedWords(),
+        storage.getCalibrationState(),
       ]);
       if (!cancelled) {
         setProfile(nextProfile);
         setWords(nextWords);
+        setCalibration(nextCalibration);
         setCompletedIds(getCompletedReadingIds());
       }
     })();
@@ -55,7 +59,10 @@ export function DashboardView({ libraryItems }: Props) {
   // dueCounts reads localStorage so it can only run client-side. The memo is
   // keyed by `words` so newly saved words bump the "Due today" widget the
   // moment the dashboard finishes hydrating.
-  const due = useMemo(() => dueCounts({ saved: words }), [words]);
+  const due = useMemo(
+    () => dueCounts({ saved: words, calibration: calibration ?? undefined }),
+    [words, calibration],
+  );
 
   // Prefer readings the learner hasn't finished yet. If everything they've
   // been pointed at is read we fall back to the full catalog so the rail

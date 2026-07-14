@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, RotateCcw, ListChecks, X } from "lucide-react";
 import { HskBadge } from "@/components/ui/Badge";
@@ -17,6 +17,12 @@ import {
   type SessionState,
 } from "@/lib/hsk-study/scheduler";
 import { loadSrsMap, setSrsBatch, isLearned } from "@/lib/hsk-study/storage";
+import {
+  applyCalibrationToPool,
+  completeVerificationCard,
+} from "@/lib/calibration/deck";
+import { emptyCalibrationState, gradeVerification } from "@/lib/calibration/state";
+import type { CalibrationState } from "@/types/calibration";
 import type { SrsGrade } from "@/types/hskStudy";
 import type { WordEntry } from "@/types/dictionary";
 
@@ -25,6 +31,11 @@ interface Props {
   deckLabel: string;
   newPerSession?: number;
   maxReviews?: number;
+  /** Calibration state used to exclude baseline-known words from the new
+   * queue and surface due verification check-ins. */
+  calibration?: CalibrationState;
+  /** Called once at session end with pass/fail per verification word. */
+  onVerificationOutcomes?: (outcomes: Record<string, boolean>) => void;
 }
 
 type Phase = "studying" | "done";
@@ -34,32 +45,50 @@ export function StudySession({
   deckLabel,
   newPerSession = 10,
   maxReviews = 50,
+  calibration,
+  onVerificationOutcomes,
 }: Props) {
   const [version, setVersion] = useState(0);
-  const initial = useMemo(() => {
-    const deck = pickDeck(pool, (w) => w.simplified, loadSrsMap(), {
+  const { initial, verificationIds } = useMemo(() => {
+    const srsMap = loadSrsMap();
+    const calibrated = applyCalibrationToPool(
+      pool,
+      (w) => w.simplified,
+      srsMap,
+      calibration ?? emptyCalibrationState(),
+    );
+    const deck = pickDeck(calibrated.pool, (w) => w.simplified, srsMap, {
       maxReviews,
       maxNew: newPerSession,
     });
-    return buildSession(deck);
+    return { initial: buildSession(deck), verificationIds: calibrated.verificationIds };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pool, newPerSession, maxReviews, version]);
+  }, [pool, newPerSession, maxReviews, calibration, version]);
 
   const [state, setState] = useState<SessionState<WordEntry>>(initial);
   const [revealed, setRevealed] = useState(false);
   const [phase, setPhase] = useState<Phase>("studying");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Pass/fail per verification word; only the first grade decides.
+  const verificationOutcomes = useRef<Record<string, boolean>>({});
 
   useEffect(() => {
     setState(initial);
     setRevealed(false);
     setPhase(initial.cards.length === 0 ? "done" : "studying");
+    verificationOutcomes.current = {};
   }, [initial]);
 
   useEffect(() => {
     if (phase !== "done") return;
     const updates = pendingSrsUpdates(state);
     if (Object.keys(updates).length > 0) setSrsBatch(updates);
+    const outcomes = verificationOutcomes.current;
+    if (Object.keys(outcomes).length > 0) {
+      verificationOutcomes.current = {};
+      onVerificationOutcomes?.(outcomes);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, state]);
 
   const current = pickNext(state);
@@ -69,7 +98,16 @@ export function StudySession({
 
   function grade(g: SrsGrade) {
     if (!current) return;
-    const next = applyGrade(state, current.id, g);
+    let next: SessionState<WordEntry>;
+    if (verificationIds.has(current.id) && current.sessionReps === 0) {
+      const result = gradeVerification(g, new Date());
+      verificationOutcomes.current[current.id] = result.passed;
+      next = result.passed
+        ? completeVerificationCard(state, current.id, result.srs)
+        : applyGrade(state, current.id, g);
+    } else {
+      next = applyGrade(state, current.id, g);
+    }
     setRevealed(false);
     setState(next);
     if (remaining(next) === 0) setPhase("done");
@@ -95,7 +133,8 @@ export function StudySession({
   }
 
   const word = current.data;
-  const isNew = !current.initialSrs;
+  const isVerification = verificationIds.has(current.id);
+  const isNew = !current.initialSrs && !isVerification;
 
   return (
     <div className="mx-auto max-w-5xl px-4 pb-24 pt-6 sm:py-8">
@@ -128,6 +167,11 @@ export function StudySession({
                       New
                     </span>
                   )}
+                  {isVerification && (
+                    <span className="rounded-full bg-seal/15 px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wide text-seal">
+                      Check-in
+                    </span>
+                  )}
                 </div>
               </div>
             ) : (
@@ -147,6 +191,7 @@ export function StudySession({
         <SessionSidebar
           cards={state.cards}
           currentId={current.id}
+          verificationIds={verificationIds}
           open={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />
@@ -237,11 +282,13 @@ function GradeButtons({ onGrade }: { onGrade: (g: SrsGrade) => void }) {
 function SessionSidebar({
   cards,
   currentId,
+  verificationIds,
   open,
   onClose,
 }: {
   cards: SessionCard<WordEntry>[];
   currentId: string;
+  verificationIds: Set<string>;
   open: boolean;
   onClose: () => void;
 }) {
@@ -267,7 +314,12 @@ function SessionSidebar({
       </div>
       <ul className="flex-1 divide-y divide-line/60 overflow-y-auto">
         {cards.map((c) => (
-          <SidebarRow key={c.id} card={c} isCurrent={c.id === currentId} />
+          <SidebarRow
+            key={c.id}
+            card={c}
+            isCurrent={c.id === currentId}
+            isVerification={verificationIds.has(c.id)}
+          />
         ))}
       </ul>
     </div>
@@ -295,11 +347,13 @@ function SessionSidebar({
 function SidebarRow({
   card,
   isCurrent,
+  isVerification,
 }: {
   card: SessionCard<WordEntry>;
   isCurrent: boolean;
+  isVerification: boolean;
 }) {
-  const isNew = !card.initialSrs;
+  const isNew = !card.initialSrs && !isVerification;
   const fullyLearned = card.done && isLearned(card.srs);
   const dots = Array.from({ length: GRADUATE_AT }, (_, i) => i < card.goodReps);
 
@@ -320,6 +374,8 @@ function SidebarRow({
             <span className="font-medium text-celadon">
               {fullyLearned ? "Learned" : "Done this round"}
             </span>
+          ) : isVerification ? (
+            <span className="font-medium text-seal">Check-in</span>
           ) : isNew ? (
             <span className="font-medium text-seal/80">New</span>
           ) : (

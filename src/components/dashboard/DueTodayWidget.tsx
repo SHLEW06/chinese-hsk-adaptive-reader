@@ -14,7 +14,7 @@ interface Props {
  * routes them straight into a mixed session.
  */
 export function DueTodayWidget({ counts }: Props) {
-  const total = counts.reviewsDue + counts.freshSaved;
+  const total = counts.reviewsDue + counts.freshSaved + counts.verificationsDue;
   if (total === 0) {
     if (counts.reviewsTomorrow === 0) return null;
     return (
@@ -43,6 +43,8 @@ export function DueTodayWidget({ counts }: Props) {
   const parts: string[] = [];
   if (counts.reviewsDue > 0)
     parts.push(`${counts.reviewsDue} review${counts.reviewsDue === 1 ? "" : "s"}`);
+  if (counts.verificationsDue > 0)
+    parts.push(`${counts.verificationsDue} check-in${counts.verificationsDue === 1 ? "" : "s"}`);
   if (counts.freshSaved > 0)
     parts.push(`${counts.freshSaved} new from saved`);
 

@@ -155,6 +155,14 @@ describe("applyBaseline", () => {
     // High confidence verifies at ~21 days, low at ~7.
     expect(applied.baseline["一"].verifyAt).toBe(daysFromNow(21));
     expect(applied.baseline["二"].verifyAt).toBe(daysFromNow(7));
+    // Completed state does not duplicate baseline-known words or retain the
+    // finished plan, keeping a full HSK 1-6 document below persistence limits.
+    expect(applied.results).toEqual({
+      "三": result("missed"),
+      "四": result("dontKnow"),
+    });
+    expect(applied.plan).toBeUndefined();
+    expect(applied.seed).toBeUndefined();
     // Missed and don't-know words are NOT baseline-excluded.
     expect(applied.baseline["三"]).toBeUndefined();
     expect(applied.baseline["四"]).toBeUndefined();
@@ -168,6 +176,31 @@ describe("applyBaseline", () => {
     expect(applied.baseline["一"]).toBeUndefined();
     // And the SRS map itself is untouched.
     expect(srsMap["一"]).toEqual(MASTERED);
+  });
+
+  it("keeps a full six-level completed state below the Firestore size limit", () => {
+    const results = Object.fromEntries(
+      Array.from({ length: 5_864 }, (_, index) => [
+        `词${index}`,
+        result("known", "high", ((index % 6) + 1) as CalibrationWordResult["level"]),
+      ]),
+    );
+    const state: CalibrationState = {
+      ...startedState(),
+      plan: {
+        levels: [1, 2, 3, 4, 5, 6],
+        wordsByLevel: { 1: Object.keys(results) },
+        blockSize: 50,
+      },
+      results,
+    };
+
+    const applied = applyBaseline(state, {}, NOW);
+    expect(Object.keys(applied.baseline)).toHaveLength(5_864);
+    expect(applied.results).toEqual({});
+    expect(new TextEncoder().encode(JSON.stringify(applied)).byteLength).toBeLessThan(
+      900_000,
+    );
   });
 
   it("is not applied automatically — an interrupted calibration keeps an empty baseline", () => {
@@ -241,8 +274,20 @@ describe("applyStartFromScratch", () => {
 
 describe("reset and recalibration", () => {
   it("reset clears only calibration-derived state", () => {
-    const state = resetCalibration();
-    expect(state).toEqual(emptyCalibrationState());
+    const state = resetCalibration(NOW);
+    expect(state).toEqual({
+      ...emptyCalibrationState(),
+      updatedAt: NOW.toISOString(),
+    });
+  });
+
+  it("timestamps reset so an older local calibration cannot win cloud sync", () => {
+    const oldLocal = applyStartFromScratch(
+      emptyCalibrationState(),
+      new Date("2026-07-13T12:00:00.000Z"),
+    );
+    const cloudReset = resetCalibration(NOW);
+    expect((oldLocal.updatedAt ?? "") < (cloudReset.updatedAt ?? "")).toBe(true);
   });
 
   it("recalibration replaces the prior baseline and keeps failed words out", () => {

@@ -213,8 +213,12 @@ export function applyBaseline(
   now: Date,
 ): CalibrationState {
   const baseline: Record<string, CalibrationKnownEntry> = {};
+  const priorityResults: Record<string, CalibrationWordResult> = {};
   for (const [word, result] of Object.entries(state.results)) {
-    if (result.outcome !== "known") continue;
+    if (result.outcome !== "known") {
+      priorityResults[word] = result;
+      continue;
+    }
     if (srsMap[word]) continue;
     baseline[word] = {
       verifyAt: verifyDateFor(result.confidence, now),
@@ -228,6 +232,13 @@ export function applyBaseline(
     status: "completed",
     completedAt: now.toISOString(),
     updatedAt: now.toISOString(),
+    // The completed baseline already carries every known-word field needed by
+    // deck selection and verification. Keeping the same words in `results`
+    // and retaining the finished plan can push a full HSK 1-6 document over
+    // Firestore's 1 MiB limit, so keep only missed/don't-know priority results.
+    plan: undefined,
+    seed: undefined,
+    results: priorityResults,
     baseline,
     baselineAppliedAt: now.toISOString(),
     verifiedCount: 0,
@@ -324,8 +335,8 @@ export function applyStartFromScratch(
  * genuine SRS history, saved words, or reading data — none of it lives in
  * CalibrationState.
  */
-export function resetCalibration(): CalibrationState {
-  return emptyCalibrationState();
+export function resetCalibration(now: Date): CalibrationState {
+  return { ...emptyCalibrationState(), updatedAt: now.toISOString() };
 }
 
 /** Manually return one assumed-known word to active study. */

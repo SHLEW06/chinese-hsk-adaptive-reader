@@ -15,6 +15,7 @@ import type { CalibrationState } from "@/types/calibration";
 import type { ContentItem } from "@/types/content";
 import type { LearnerProfile } from "@/types/learner";
 import type { SavedWord } from "@/types/savedWord";
+import { SerialTaskQueue } from "./serialTaskQueue";
 
 /* ------------------------------------------------------------------ */
 /*  In-memory read cache – avoids redundant Firestore reads on every  */
@@ -29,6 +30,7 @@ interface CacheEntry<T> {
 }
 
 const cache = new Map<string, CacheEntry<unknown>>();
+const calibrationWriteQueue = new SerialTaskQueue();
 
 function cacheKey(userId: string, coll: string) {
   return `${userId}:${coll}`;
@@ -114,10 +116,11 @@ export async function getCalibrationState(userId: string): Promise<CalibrationSt
 
 // Deliberately NOT a merge write: reset and recalibration must be able to
 // remove baseline/result keys, which merge semantics would resurrect.
-export const saveCalibrationState = async (userId: string, state: CalibrationState) => {
-  await setDoc(doc(db, "users", userId, "calibration", "main"), state);
-  invalidateCache(userId, "calibration");
-};
+export const saveCalibrationState = (userId: string, state: CalibrationState) =>
+  calibrationWriteQueue.run(userId, async () => {
+    await setDoc(doc(db, "users", userId, "calibration", "main"), state);
+    invalidateCache(userId, "calibration");
+  });
 
 /* ---- Imported content ---- */
 

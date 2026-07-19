@@ -174,7 +174,7 @@ export default function CalibrationPage() {
               "Discard this calibration in progress? Answers so far will be deleted. Your review history and saved words are not affected.",
             )
           ) {
-            persist(resetCalibration());
+            persist(resetCalibration(new Date()));
           }
         }}
       />
@@ -191,7 +191,7 @@ export default function CalibrationPage() {
             "Reset calibration? Words assumed known will return to the ordinary new-word queue. Your genuine review history and saved words are never touched.",
           )
         ) {
-          persist(resetCalibration());
+          persist(resetCalibration(new Date()));
         }
       }}
       onReturnWord={(word) => persist(returnWordToStudy(state, word, new Date()))}

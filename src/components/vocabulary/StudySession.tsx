@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, RotateCcw, ListChecks, X } from "lucide-react";
 import { HskBadge } from "@/components/ui/Badge";
@@ -34,8 +34,9 @@ interface Props {
   /** Calibration state used to exclude baseline-known words from the new
    * queue and surface due verification check-ins. */
   calibration?: CalibrationState;
-  /** Called once at session end with pass/fail per verification word. */
-  onVerificationOutcomes?: (outcomes: Record<string, boolean>) => void;
+  /** Called immediately when a check-in receives its first grade — not at
+   * session end — so an abandoned session cannot lose the outcome. */
+  onVerificationOutcome?: (word: string, passed: boolean) => void;
 }
 
 type Phase = "studying" | "done";
@@ -46,7 +47,7 @@ export function StudySession({
   newPerSession = 10,
   maxReviews = 50,
   calibration,
-  onVerificationOutcomes,
+  onVerificationOutcome,
 }: Props) {
   const [version, setVersion] = useState(0);
   const { initial, verificationIds } = useMemo(() => {
@@ -69,25 +70,17 @@ export function StudySession({
   const [revealed, setRevealed] = useState(false);
   const [phase, setPhase] = useState<Phase>("studying");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  // Pass/fail per verification word; only the first grade decides.
-  const verificationOutcomes = useRef<Record<string, boolean>>({});
 
   useEffect(() => {
     setState(initial);
     setRevealed(false);
     setPhase(initial.cards.length === 0 ? "done" : "studying");
-    verificationOutcomes.current = {};
   }, [initial]);
 
   useEffect(() => {
     if (phase !== "done") return;
     const updates = pendingSrsUpdates(state);
     if (Object.keys(updates).length > 0) setSrsBatch(updates);
-    const outcomes = verificationOutcomes.current;
-    if (Object.keys(outcomes).length > 0) {
-      verificationOutcomes.current = {};
-      onVerificationOutcomes?.(outcomes);
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, state]);
 
@@ -99,12 +92,21 @@ export function StudySession({
   function grade(g: SrsGrade) {
     if (!current) return;
     let next: SessionState<WordEntry>;
+    // Only the first grade of a check-in decides its outcome; after that the
+    // card is an ordinary session card, so a replayed grade cannot re-run
+    // the verification transition.
     if (verificationIds.has(current.id) && current.sessionReps === 0) {
       const result = gradeVerification(g, new Date());
-      verificationOutcomes.current[current.id] = result.passed;
       next = result.passed
         ? completeVerificationCard(state, current.id, result.srs)
         : applyGrade(state, current.id, g);
+      // Persist the outcome now, not at session end: the seeded SRS state
+      // (pass) or the new learning state (fail) and the baseline removal
+      // must survive an abandoned session. Rewriting the same word at
+      // session end is harmless — later in-session grades only refine it.
+      const gradedSrs = next.cards.find((c) => c.id === current.id)?.srs;
+      if (gradedSrs) setSrsBatch({ [current.id]: gradedSrs });
+      onVerificationOutcome?.(current.id, result.passed);
     } else {
       next = applyGrade(state, current.id, g);
     }

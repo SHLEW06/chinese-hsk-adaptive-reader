@@ -9,7 +9,7 @@ import { getByHskLevel, getCommonNonHsk, getEntry } from "@/lib/dictionary/dicti
 import { StudySession } from "@/components/vocabulary/StudySession";
 import { loadStudySettings } from "@/lib/hsk-study/storage";
 import { buildMixedPool } from "@/lib/hsk-study/mixedDeck";
-import { applyVerificationOutcomes } from "@/lib/calibration/state";
+import { applyVerificationOutcomes, emptyCalibrationState } from "@/lib/calibration/state";
 import { getStorageProvider } from "@/lib/storage/storageProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import type { CalibrationState } from "@/types/calibration";
@@ -89,32 +89,96 @@ function StudyInner() {
   // Calibration applies to every deck: it filters baseline-known words out
   // of the new queue and surfaces due verification check-ins.
   const calibrationRef = useRef<CalibrationState | null>(null);
+  const [calibrationSaveFailed, setCalibrationSaveFailed] = useState(false);
   useEffect(() => {
     let cancelled = false;
     void getStorageProvider(user)
       .getCalibrationState()
-      .then((state) => {
+      .then((load) => {
         if (cancelled) return;
-        calibrationRef.current = state;
-        setCalibration(state);
+        if (load.kind === "unsupportedVersion") {
+          // Data from a newer client: study proceeds without calibration
+          // filtering, and calibrationRef stays null so no verification
+          // transition can ever write over the future-version payload.
+          calibrationRef.current = null;
+          setCalibration(emptyCalibrationState());
+          return;
+        }
+        calibrationRef.current = load.state;
+        setCalibration(load.state);
       });
     return () => {
       cancelled = true;
     };
   }, [user]);
 
+  // Deliberate save pipeline for verification outcomes: the latest state is
+  // kept pending until a save for it succeeds; failures are surfaced and
+  // retried with a capped backoff. Because saves are full-document replaces,
+  // any later successful write also heals earlier failed ones.
+  const pendingSave = useRef<CalibrationState | null>(null);
+  const savingNow = useRef(false);
+  const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const retriesLeft = useRef(0);
+
+  const flushCalibrationSave = useCallback(
+    function flush() {
+      const state = pendingSave.current;
+      if (!state || savingNow.current) return;
+      savingNow.current = true;
+      getStorageProvider(user)
+        .saveCalibrationState(state)
+        .then(
+          () => {
+            savingNow.current = false;
+            setCalibrationSaveFailed(false);
+            if (pendingSave.current === state) pendingSave.current = null;
+            else flush(); // a newer outcome arrived while saving
+          },
+          (error) => {
+            savingNow.current = false;
+            console.error("Check-in result save failed", error);
+            setCalibrationSaveFailed(true);
+            if (retriesLeft.current > 0) {
+              retriesLeft.current -= 1;
+              if (retryTimer.current) clearTimeout(retryTimer.current);
+              retryTimer.current = setTimeout(flush, 4000);
+            }
+          },
+        );
+    },
+    [user],
+  );
+
   // Persist through a ref, not state: a state update here would rebuild the
-  // pool and silently restart the finished session. Staleness is safe — the
-  // verified word now has genuine SRS state, which always outranks the
-  // baseline in deck selection.
-  const handleVerificationOutcomes = useCallback(
-    (outcomes: Record<string, boolean>) => {
+  // pool and silently restart the session. Staleness is safe — the verified
+  // word now has genuine SRS state, which always outranks the baseline in
+  // deck selection. Called per word at first grade, so an abandoned session
+  // cannot lose an outcome; replays are no-ops (the word has left the
+  // baseline already).
+  const handleVerificationOutcome = useCallback(
+    (word: string, passed: boolean) => {
       const prev = calibrationRef.current;
       if (!prev) return;
-      const next = applyVerificationOutcomes(prev, outcomes, new Date());
-      if (next !== prev) {
-        calibrationRef.current = next;
-        void getStorageProvider(user).saveCalibrationState(next);
+      const next = applyVerificationOutcomes(prev, { [word]: passed }, new Date());
+      if (next === prev) return;
+      calibrationRef.current = next;
+      pendingSave.current = next;
+      retriesLeft.current = 3;
+      flushCalibrationSave();
+    },
+    [flushCalibrationSave],
+  );
+
+  // Route exit: one last flush attempt for a still-unsaved outcome.
+  useEffect(
+    () => () => {
+      if (retryTimer.current) clearTimeout(retryTimer.current);
+      const state = pendingSave.current;
+      if (state && !savingNow.current) {
+        getStorageProvider(user)
+          .saveCalibrationState(state)
+          .catch((error) => console.error("Check-in result save failed on exit", error));
       }
     },
     [user],
@@ -171,15 +235,26 @@ function StudyInner() {
   }
 
   return (
-    <StudySession
-      key={deck}
-      pool={pool}
-      deckLabel={DECK_LABELS[deck]}
-      newPerSession={settings.maxNew}
-      maxReviews={settings.maxReviews}
-      calibration={calibration}
-      onVerificationOutcomes={handleVerificationOutcomes}
-    />
+    <>
+      {calibrationSaveFailed && (
+        <p
+          role="alert"
+          className="mx-auto max-w-5xl px-4 pt-4 text-xs font-medium text-rose-700"
+        >
+          A check-in result could not be saved yet — retrying automatically.
+          Your review history is unaffected.
+        </p>
+      )}
+      <StudySession
+        key={deck}
+        pool={pool}
+        deckLabel={DECK_LABELS[deck]}
+        newPerSession={settings.maxNew}
+        maxReviews={settings.maxReviews}
+        calibration={calibration}
+        onVerificationOutcome={handleVerificationOutcome}
+      />
+    </>
   );
 }
 

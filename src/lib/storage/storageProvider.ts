@@ -3,7 +3,11 @@ import type { CalibrationState } from "@/types/calibration";
 import type { ContentItem } from "@/types/content";
 import type { LearnerProfile } from "@/types/learner";
 import type { SavedWord } from "@/types/savedWord";
-import { normalizeCalibrationState } from "@/lib/calibration/state";
+import {
+  classifyCalibrationState,
+  resolveCalibrationLoad,
+  type CalibrationLoadResult,
+} from "@/lib/calibration/load";
 import * as firebaseStore from "./firebaseStore";
 import * as localStore from "./localStore";
 
@@ -18,9 +22,18 @@ export interface StorageProvider {
   saveImportedContent(content: ContentItem): Promise<void>;
   savePlacementResult(result: LearnerProfile): Promise<void>;
   saveReadingEvent(event: Record<string, unknown>): Promise<void>;
-  /** Always resolves to a normalized state; older records without
-   * calibration data come back as the empty not-started state. */
-  getCalibrationState(): Promise<CalibrationState>;
+  /** Classified load. Older records without calibration data come back as
+   * `absent` with an empty writable state; `unsupportedVersion` results carry
+   * no state and must never be overwritten by this client. Signed in, the
+   * newer of the cloud document and the local per-answer checkpoint wins. */
+  getCalibrationState(): Promise<CalibrationLoadResult>;
+  /** Durable local-first checkpoint, cheap enough to call after every
+   * accepted answer. Signed out this *is* the save; signed in it writes the
+   * per-user local checkpoint without touching the cloud. */
+  checkpointCalibrationState(state: CalibrationState): Promise<void>;
+  /** Full save: local checkpoint plus (signed in) an ordered cloud write.
+   * Rejects — never silently drops — when the stored payload belongs to a
+   * newer schema version or the write itself fails. */
   saveCalibrationState(state: CalibrationState): Promise<void>;
 }
 
@@ -36,8 +49,18 @@ export function getStorageProvider(user: User | null): StorageProvider {
     saveImportedContent: (content) => firebaseStore.saveImportedContent(user.uid, content),
     savePlacementResult: async (result) => { await firebaseStore.savePlacementResult(user.uid, result); await firebaseStore.saveLearnerProfile(user.uid, result); },
     saveReadingEvent: async (event) => { await firebaseStore.saveReadingEvent(user.uid, event); },
-    getCalibrationState: async () => normalizeCalibrationState(await firebaseStore.getCalibrationState(user.uid)),
-    saveCalibrationState: (state) => firebaseStore.saveCalibrationState(user.uid, state),
+    getCalibrationState: async () =>
+      resolveCalibrationLoad(
+        await firebaseStore.getCalibrationState(user.uid),
+        await localStore.getCalibrationCheckpoint(user.uid),
+      ),
+    checkpointCalibrationState: (state) => localStore.setCalibrationCheckpoint(user.uid, state),
+    saveCalibrationState: async (state) => {
+      // Local first so the answer is durable even if the cloud write fails;
+      // cloud writes stay serialized per user inside firebaseStore.
+      await localStore.setCalibrationCheckpoint(user.uid, state);
+      await firebaseStore.saveCalibrationState(user.uid, state);
+    },
   };
   return {
     getSavedWords: localStore.getSavedWords,
@@ -55,7 +78,8 @@ export function getStorageProvider(user: User | null): StorageProvider {
         await localStore.pushReadingHistory({ id, title, date });
       }
     },
-    getCalibrationState: async () => normalizeCalibrationState(await localStore.getCalibration()),
+    getCalibrationState: async () => classifyCalibrationState(await localStore.getCalibration()),
+    checkpointCalibrationState: localStore.setCalibration,
     saveCalibrationState: localStore.setCalibration,
   };
 }

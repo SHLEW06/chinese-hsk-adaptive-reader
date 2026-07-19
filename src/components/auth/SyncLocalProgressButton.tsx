@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "./AuthProvider";
+import { classifyCalibrationState } from "@/lib/calibration/load";
 import * as firebaseStore from "@/lib/storage/firebaseStore";
 import * as localStore from "@/lib/storage/localStore";
 
@@ -20,11 +21,19 @@ export function SyncLocalProgressButton() {
       ]);
       const newWords = words.filter((word) => !new Set(cloudWords.map((w) => w.id)).has(word.id));
       const newContent = content.filter((item) => !new Set(cloudContent.map((c) => c.id)).has(item.id));
-      // Only upload local calibration when the cloud copy is absent or older —
-      // never clobber a newer cloud calibration with a stale browser copy.
-      const localCalibrationIsNewer =
-        !!calibration && calibration.status !== "notStarted" &&
-        (!cloudCalibration || (calibration.updatedAt ?? "") > (cloudCalibration.updatedAt ?? ""));
+      // Only upload local calibration when it is *valid* current-schema data
+      // and the cloud copy is absent or older. A future-version cloud document
+      // (written by a newer client) is never overwritten, no matter what
+      // timestamps say; malformed local data is never uploaded.
+      const localLoad = classifyCalibrationState(calibration);
+      const cloudLoad = classifyCalibrationState(cloudCalibration);
+      const uploadableCalibration =
+        cloudLoad.kind !== "unsupportedVersion" &&
+        localLoad.kind === "valid" &&
+        localLoad.state.status !== "notStarted" &&
+        (localLoad.state.updatedAt ?? "") > (cloudLoad.state.updatedAt ?? "")
+          ? localLoad.state
+          : null;
 
       // Use batched writes instead of individual operations — reduces Firestore write ops
       await firebaseStore.batchSyncToCloud(
@@ -33,7 +42,7 @@ export function SyncLocalProgressButton() {
         newContent,
         results,
         profile && !cloudProfile ? profile : null,
-        localCalibrationIsNewer ? calibration : null,
+        uploadableCalibration,
       );
       setStatus("Local progress uploaded.");
     } catch {

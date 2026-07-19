@@ -46,6 +46,30 @@ through spaced repetition.
   multi-select to push them back into rotation.
 - **Settings**: cap max new and max reviews per session.
 
+### Vocabulary calibration
+- **Comprehensive calibration** (`/vocabulary/calibration`) works through the
+  HSK 1–6 vocabulary of the levels you pick in resumable ~50-word blocks:
+  you see the Chinese term first, self-assess (Know / Not sure / Don't know),
+  then confirm by picking the meaning from deterministic multiple-choice
+  options. Progress saves as you go; nothing applies until you confirm.
+- **Quick starting level** assumes only the levels *below* your chosen level
+  as known (the boundary level still gets studied), for learners who already
+  know roughly where they stand. **Start from scratch** skips calibration and
+  keeps today's behavior.
+- **Calibration-known ≠ SRS-mastered.** Words you get right are excluded
+  from the ordinary new-card queue but are never marked as mastered — a
+  single answer isn't durable recall, so no review history is fabricated.
+  They return later as **check-in cards** (about 1–5 weeks out, depending on
+  confidence): pass and the word gains genuine review state; fail and it
+  drops straight into active learning. Genuine review history always takes
+  precedence over calibration results.
+- **Recalibrate or reset anytime** from the calibration page; resets only
+  remove calibration-derived state and never touch review history or saved
+  words. Individual assumed-known words can be sent back to active study.
+- Calibration state persists to localStorage when signed out and to Firestore
+  when signed in, like other progress. Estimates are informal study aids, not
+  official HSK certification.
+
 ### Dashboard
 - Placement-driven HSK level, saved/known/review counts, known-word progress
   bar.

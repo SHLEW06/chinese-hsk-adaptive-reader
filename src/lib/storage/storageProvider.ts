@@ -1,7 +1,9 @@
 import type { User } from "firebase/auth";
+import type { CalibrationState } from "@/types/calibration";
 import type { ContentItem } from "@/types/content";
 import type { LearnerProfile } from "@/types/learner";
 import type { SavedWord } from "@/types/savedWord";
+import { normalizeCalibrationState } from "@/lib/calibration/state";
 import * as firebaseStore from "./firebaseStore";
 import * as localStore from "./localStore";
 
@@ -16,6 +18,10 @@ export interface StorageProvider {
   saveImportedContent(content: ContentItem): Promise<void>;
   savePlacementResult(result: LearnerProfile): Promise<void>;
   saveReadingEvent(event: Record<string, unknown>): Promise<void>;
+  /** Always resolves to a normalized state; older records without
+   * calibration data come back as the empty not-started state. */
+  getCalibrationState(): Promise<CalibrationState>;
+  saveCalibrationState(state: CalibrationState): Promise<void>;
 }
 
 export function getStorageProvider(user: User | null): StorageProvider {
@@ -30,6 +36,8 @@ export function getStorageProvider(user: User | null): StorageProvider {
     saveImportedContent: (content) => firebaseStore.saveImportedContent(user.uid, content),
     savePlacementResult: async (result) => { await firebaseStore.savePlacementResult(user.uid, result); await firebaseStore.saveLearnerProfile(user.uid, result); },
     saveReadingEvent: async (event) => { await firebaseStore.saveReadingEvent(user.uid, event); },
+    getCalibrationState: async () => normalizeCalibrationState(await firebaseStore.getCalibrationState(user.uid)),
+    saveCalibrationState: (state) => firebaseStore.saveCalibrationState(user.uid, state),
   };
   return {
     getSavedWords: localStore.getSavedWords,
@@ -47,5 +55,7 @@ export function getStorageProvider(user: User | null): StorageProvider {
         await localStore.pushReadingHistory({ id, title, date });
       }
     },
+    getCalibrationState: async () => normalizeCalibrationState(await localStore.getCalibration()),
+    saveCalibrationState: localStore.setCalibration,
   };
 }

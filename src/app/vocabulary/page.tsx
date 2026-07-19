@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { GraduationCap, Play, Settings, Sparkles } from "lucide-react";
+import { ClipboardList, GraduationCap, Play, Settings, Sparkles } from "lucide-react";
 import { HskBadge } from "@/components/ui/Badge";
 import { useDictionary } from "@/components/dictionary/DictionaryProvider";
 import { getByHskLevel, getCommonNonHsk } from "@/lib/dictionary/dictionary";
@@ -18,7 +18,9 @@ import {
   saveStudySettings,
   type StudySettings,
 } from "@/lib/hsk-study/storage";
+import { calibrationMetrics } from "@/lib/calibration/deck";
 import { uid, todayISO } from "@/lib/utils/text";
+import type { CalibrationState } from "@/types/calibration";
 import type { WordEntry } from "@/types/dictionary";
 import type { SavedWord } from "@/types/savedWord";
 
@@ -64,14 +66,20 @@ export default function VocabularyPage() {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const [popup, setPopup] = useState<WordEntry | null>(null);
   const [saved, setSaved] = useState<SavedWord[]>([]);
+  const [calibration, setCalibration] = useState<CalibrationState | null>(null);
   const [settings, setSettings] = useState<StudySettings>(DEFAULT_STUDY_SETTINGS);
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    getStorageProvider(user).getSavedWords().then((words) => {
-      if (!cancelled) setSaved(words);
-    });
+    const storage = getStorageProvider(user);
+    void Promise.all([storage.getSavedWords(), storage.getCalibrationState()]).then(
+      ([words, calib]) => {
+        if (cancelled) return;
+        setSaved(words);
+        setCalibration(calib);
+      },
+    );
     return () => {
       cancelled = true;
     };
@@ -95,6 +103,14 @@ export default function VocabularyPage() {
     for (const srs of Object.values(map)) if (isLearned(srs)) n += 1;
     return n;
   }, [saved, tab, ready, size]);
+
+  // Estimated-known (calibration baseline) is deliberately a separate count
+  // from mastered-through-review — one calibration answer is not mastery.
+  const estimatedKnown = useMemo(() => {
+    if (!calibration) return 0;
+    return calibrationMetrics(loadSrsMap(), calibration).estimatedKnown;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [calibration, saved, tab, ready, size]);
 
   const saveWord = (entry: WordEntry) => {
     if (savedSet.has(entry.simplified)) return;
@@ -196,17 +212,61 @@ export default function VocabularyPage() {
             )}
           </p>
         </div>
-        <Link
-          href="/vocabulary/learned"
-          className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-[12.5px] font-medium text-ink shadow-paper transition-all hover:-translate-y-px hover:border-celadon/40"
-        >
-          <GraduationCap size={13} />
-          Learned
-          <span className="rounded-full bg-celadon/15 px-1.5 py-0.5 text-[10px] font-semibold text-celadon">
-            {learnedCount}
-          </span>
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/vocabulary/learned"
+            className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-[12.5px] font-medium text-ink shadow-paper transition-all hover:-translate-y-px hover:border-celadon/40"
+            title="Words mastered through genuine spaced-repetition reviews"
+          >
+            <GraduationCap size={13} />
+            Mastered
+            <span className="rounded-full bg-celadon/15 px-1.5 py-0.5 text-[10px] font-semibold text-celadon">
+              {learnedCount}
+            </span>
+          </Link>
+          <Link
+            href="/vocabulary/calibration"
+            className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-[12.5px] font-medium text-ink shadow-paper transition-all hover:-translate-y-px hover:border-seal/40"
+            title="Estimated known from calibration — verified over time, separate from mastery"
+          >
+            <ClipboardList size={13} />
+            Calibration
+            {estimatedKnown > 0 && (
+              <span className="rounded-full bg-seal/15 px-1.5 py-0.5 text-[10px] font-semibold text-seal">
+                {estimatedKnown.toLocaleString()} known
+              </span>
+            )}
+          </Link>
+        </div>
       </header>
+
+      {calibration?.status === "notStarted" && (
+        <div
+          className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-4 shadow-paper"
+          style={{
+            background:
+              "linear-gradient(140deg, color-mix(in srgb, var(--seal) 8%, var(--surface)) 0%, var(--paper-2) 70%, var(--surface) 100%)",
+            borderColor: "color-mix(in srgb, var(--seal) 25%, transparent)",
+          }}
+        >
+          <div className="min-w-0">
+            <div className="text-sm font-medium text-ink">
+              Already know some Chinese? Calibrate your starting point.
+            </div>
+            <p className="mt-0.5 max-w-lg text-[12.5px] text-muted">
+              A short, resumable check skips words you already know so studying
+              starts at your real level. Skipped words aren&apos;t marked as
+              mastered — they&apos;re verified later with quick check-ins.
+            </p>
+          </div>
+          <Link
+            href="/vocabulary/calibration"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-seal px-3.5 py-2 text-sm font-medium text-white shadow-paper transition-all hover:-translate-y-px"
+          >
+            <ClipboardList size={14} /> Set up
+          </Link>
+        </div>
+      )}
 
       <div className="mb-5 flex flex-wrap gap-1.5">
         {TABS.map(({ key, label }) => {

@@ -1,6 +1,7 @@
 import type { SavedWord } from "@/types/savedWord";
 import type { LearnerProfile } from "@/types/learner";
 import type { ContentItem } from "@/types/content";
+import type { CalibrationState } from "@/types/calibration";
 
 /**
  * Thin, typed wrapper over persistence so the rest of the app never touches
@@ -13,6 +14,7 @@ const KEYS = {
   importedContent: "importedContent",
   readingHistory: "readingHistory",
   placementResults: "placementResults",
+  calibration: "calibration",
 } as const;
 
 const LEGACY_KEYS: Record<keyof AppState, string> = {
@@ -21,6 +23,7 @@ const LEGACY_KEYS: Record<keyof AppState, string> = {
   importedContent: "car.importedContent",
   readingHistory: "car.readingHistory",
   placementResults: "car.placementResults",
+  calibration: "car.calibration",
 };
 
 const isBrowser = (): boolean => typeof window !== "undefined";
@@ -37,6 +40,7 @@ interface AppState {
   importedContent: ContentItem[];
   readingHistory: ReadingHistoryEntry[];
   placementResults: LearnerProfile[];
+  calibration: CalibrationState | null;
 }
 
 const defaultState: AppState = {
@@ -45,6 +49,7 @@ const defaultState: AppState = {
   importedContent: [],
   readingHistory: [],
   placementResults: [],
+  calibration: null,
 };
 
 
@@ -91,6 +96,12 @@ export const getPlacementResults = (): Promise<LearnerProfile[]> => readField("p
 export const addPlacementResult = async (profile: LearnerProfile): Promise<void> => {
   await writeField("placementResults", [profile, ...(await getPlacementResults())]);
 };
+
+/* ---- Vocabulary calibration ---- */
+export const getCalibration = (): Promise<CalibrationState | null> =>
+  readField("calibration");
+export const setCalibration = (state: CalibrationState): Promise<void> =>
+  writeField("calibration", state);
 
 /* ---- Imported content ---- */
 export const getImportedContent = (): Promise<ContentItem[]> => readField("importedContent");

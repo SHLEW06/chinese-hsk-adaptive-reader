@@ -19,6 +19,7 @@ import {
   type StudySettings,
 } from "@/lib/hsk-study/storage";
 import { calibrationMetrics } from "@/lib/calibration/deck";
+import { emptyCalibrationState } from "@/lib/calibration/state";
 import { uid, todayISO } from "@/lib/utils/text";
 import type { CalibrationState } from "@/types/calibration";
 import type { WordEntry } from "@/types/dictionary";
@@ -74,10 +75,12 @@ export default function VocabularyPage() {
     let cancelled = false;
     const storage = getStorageProvider(user);
     void Promise.all([storage.getSavedWords(), storage.getCalibrationState()]).then(
-      ([words, calib]) => {
+      ([words, load]) => {
         if (cancelled) return;
         setSaved(words);
-        setCalibration(calib);
+        // Unsupported future-version data is read-only: show neutral (empty)
+        // calibration metrics rather than misreading a newer schema.
+        setCalibration(load.kind === "unsupportedVersion" ? emptyCalibrationState() : load.state);
       },
     );
     return () => {

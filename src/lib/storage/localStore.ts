@@ -2,6 +2,7 @@ import type { SavedWord } from "@/types/savedWord";
 import type { LearnerProfile } from "@/types/learner";
 import type { ContentItem } from "@/types/content";
 import type { CalibrationState } from "@/types/calibration";
+import { assertCalibrationOverwriteSafe } from "@/lib/calibration/load";
 
 /**
  * Thin, typed wrapper over persistence so the rest of the app never touches
@@ -72,6 +73,14 @@ function write<T>(key: string, value: T): void {
   }
 }
 
+/** Like `write`, but lets quota/serialization errors propagate. Calibration
+ * checkpoints are durability-critical: a silently dropped write would defeat
+ * the per-answer checkpoint guarantee, so callers must get to see failures. */
+function writeStrict<T>(key: string, value: T): void {
+  if (!isBrowser()) return;
+  window.localStorage.setItem(key, JSON.stringify(value));
+}
+
 async function readField<K extends keyof AppState>(field: K): Promise<AppState[K]> {
   return read(LEGACY_KEYS[field], defaultState[field]);
 }
@@ -100,8 +109,27 @@ export const addPlacementResult = async (profile: LearnerProfile): Promise<void>
 /* ---- Vocabulary calibration ---- */
 export const getCalibration = (): Promise<CalibrationState | null> =>
   readField("calibration");
-export const setCalibration = (state: CalibrationState): Promise<void> =>
-  writeField("calibration", state);
+export const setCalibration = async (state: CalibrationState): Promise<void> => {
+  // Never replace a payload written by a newer schema version.
+  assertCalibrationOverwriteSafe(await readField("calibration"));
+  writeStrict(LEGACY_KEYS.calibration, state);
+};
+
+/* ---- Calibration checkpoint (signed-in, per user) ----
+ * Local-first durability: signed-in calibration answers checkpoint here on
+ * every answer while cloud writes stay throttled and ordered. Keyed by uid so
+ * one account's checkpoint can never leak into another's (or into the
+ * signed-out `car.calibration` state). */
+const checkpointKey = (uid: string) => `car.calibrationCheckpoint.${uid}`;
+export const getCalibrationCheckpoint = async (uid: string): Promise<unknown> =>
+  read<unknown>(checkpointKey(uid), null);
+export const setCalibrationCheckpoint = async (
+  uid: string,
+  state: CalibrationState,
+): Promise<void> => {
+  assertCalibrationOverwriteSafe(read<unknown>(checkpointKey(uid), null));
+  writeStrict(checkpointKey(uid), state);
+};
 
 /* ---- Imported content ---- */
 export const getImportedContent = (): Promise<ContentItem[]> => readField("importedContent");

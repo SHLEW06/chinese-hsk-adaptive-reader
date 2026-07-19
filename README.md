@@ -51,7 +51,9 @@ through spaced repetition.
   HSK 1–6 vocabulary of the levels you pick in resumable ~50-word blocks:
   you see the Chinese term first, self-assess (Know / Not sure / Don't know),
   then confirm by picking the meaning from deterministic multiple-choice
-  options. Progress saves as you go; nothing applies until you confirm.
+  options. Progress is checkpointed on the device after every answer, so
+  interrupted runs (refresh, navigation, browser closure) resume at the exact
+  next word; nothing applies until you confirm.
 - **Quick starting level** assumes only the levels *below* your chosen level
   as known (the boundary level still gets studied), for learners who already
   know roughly where they stand. **Start from scratch** skips calibration and
@@ -61,14 +63,23 @@ through spaced repetition.
   single answer isn't durable recall, so no review history is fabricated.
   They return later as **check-in cards** (about 1–5 weeks out, depending on
   confidence): pass and the word gains genuine review state; fail and it
-  drops straight into active learning. Genuine review history always takes
-  precedence over calibration results.
+  drops straight into active learning. A check-in's outcome is persisted the
+  moment it is first graded — abandoning the rest of the study session does
+  not lose it — and genuine review history always takes precedence over
+  calibration results.
 - **Recalibrate or reset anytime** from the calibration page; resets only
   remove calibration-derived state and never touch review history or saved
   words. Individual assumed-known words can be sent back to active study.
-- Calibration state persists to localStorage when signed out and to Firestore
-  when signed in, like other progress. Estimates are informal study aids, not
-  official HSK certification.
+- Calibration state persists to localStorage when signed out. Signed in, every
+  answer is still checkpointed locally first, and the state is synchronized to
+  Firestore through ordered (serialized per-user) writes every few answers and
+  on pause or leaving the page; on load, the newer of the cloud copy and the
+  local checkpoint wins. Switching devices immediately after answering can
+  still trail the cloud by a few answers until the next sync.
+- Calibration data saved by a **newer app version** (a future schema) is
+  preserved untouched: older clients show it as read-only, refuse calibration
+  writes until updated, and keep reading and ordinary vocabulary study
+  working. Estimates are informal study aids, not official HSK certification.
 
 ### Dashboard
 - Placement-driven HSK level, saved/known/review counts, known-word progress

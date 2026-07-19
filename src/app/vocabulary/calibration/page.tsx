@@ -41,52 +41,118 @@ import type {
 
 const ALL_LEVELS: CalibrationLevel[] = [1, 2, 3, 4, 5, 6];
 
-/** Persist to Firestore every N answers; local writes are cheap but cloud
- * writes are throttled. Block boundaries and pauses always force a save. */
-const SAVE_EVERY_N_ANSWERS = 5;
+/** Cloud writes are throttled to every N answers (block boundaries, pauses,
+ * and route exits always force one). The durable *local* checkpoint is not
+ * throttled: it is written after every accepted answer. */
+const CLOUD_SYNC_EVERY_N_ANSWERS = 5;
 
 export default function CalibrationPage() {
   const { ready } = useDictionary();
   const { user } = useAuth();
   const [state, setState] = useState<CalibrationState | null>(null);
+  const [unsupportedVersion, setUnsupportedVersion] = useState<number | null>(null);
   const [running, setRunning] = useState(false);
   const [setupMode, setSetupMode] = useState(false);
-  const unsavedAnswers = useRef(0);
+  const [saveError, setSaveError] = useState(false);
+  // Latest state + count of answers not yet flushed to the cloud, readable
+  // from unmount/pagehide handlers without re-subscribing on every answer.
+  const latestState = useRef<CalibrationState | null>(null);
+  const unsyncedCloudAnswers = useRef(0);
 
   useEffect(() => {
     let cancelled = false;
     void getStorageProvider(user)
       .getCalibrationState()
-      .then((s) => {
-        if (!cancelled) setState(s);
+      .then((load) => {
+        if (cancelled) return;
+        if (load.kind === "unsupportedVersion") {
+          setUnsupportedVersion(load.schemaVersion);
+          return;
+        }
+        latestState.current = load.state;
+        setState(load.state);
       });
     return () => {
       cancelled = true;
     };
   }, [user]);
 
+  /** Full save: local checkpoint plus a serialized cloud write when signed
+   * in. Used for every non-answer transition (setup, pause, apply, reset). */
   const persist = useCallback(
     (next: CalibrationState) => {
       setState(next);
-      unsavedAnswers.current = 0;
-      void getStorageProvider(user).saveCalibrationState(next);
+      latestState.current = next;
+      unsyncedCloudAnswers.current = 0;
+      getStorageProvider(user)
+        .saveCalibrationState(next)
+        .then(
+          () => setSaveError(false),
+          (error) => {
+            console.error("Calibration save failed", error);
+            setSaveError(true);
+          },
+        );
     },
     [user],
   );
 
-  /** Answer-path persistence: state updates immediately, storage every few
-   * answers (or when forced at block boundaries / pauses). */
+  /** Answer-path persistence: a durable local checkpoint after *every*
+   * accepted answer, and a serialized cloud sync every few answers or when
+   * forced (block boundary). Signed out, the checkpoint is the save. */
   const persistAnswer = useCallback(
     (next: CalibrationState, force: boolean) => {
       setState(next);
-      unsavedAnswers.current += 1;
-      if (force || unsavedAnswers.current >= SAVE_EVERY_N_ANSWERS) {
-        unsavedAnswers.current = 0;
-        void getStorageProvider(user).saveCalibrationState(next);
-      }
+      latestState.current = next;
+      const storage = getStorageProvider(user);
+      unsyncedCloudAnswers.current += 1;
+      const flushCloud =
+        force || unsyncedCloudAnswers.current >= CLOUD_SYNC_EVERY_N_ANSWERS;
+      if (flushCloud) unsyncedCloudAnswers.current = 0;
+      const write = flushCloud
+        ? storage.saveCalibrationState(next)
+        : storage.checkpointCalibrationState(next);
+      write.then(
+        () => setSaveError(false),
+        (error) => {
+          console.error("Calibration answer save failed", error);
+          setSaveError(true);
+          // Force a full save attempt on the next answer so a transient
+          // failure heals itself: every write carries the complete state.
+          unsyncedCloudAnswers.current = CLOUD_SYNC_EVERY_N_ANSWERS;
+        },
+      );
     },
     [user],
   );
+
+  // Flush any throttled cloud sync on route exit and when the tab is hidden
+  // or unloaded. The per-answer local checkpoint is the durability backstop —
+  // these flushes just narrow the cross-device staleness window, so
+  // `beforeunload` is deliberately not relied on.
+  useEffect(() => {
+    const flush = () => {
+      if (unsyncedCloudAnswers.current === 0 || !latestState.current) return;
+      unsyncedCloudAnswers.current = 0;
+      getStorageProvider(user)
+        .saveCalibrationState(latestState.current)
+        .catch((error) => console.error("Calibration flush failed", error));
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") flush();
+    };
+    window.addEventListener("pagehide", flush);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      document.removeEventListener("visibilitychange", onVisibility);
+      flush();
+    };
+  }, [user]);
+
+  if (unsupportedVersion !== null) {
+    return <UnsupportedCalibration version={unsupportedVersion} />;
+  }
 
   if (state === null) {
     return (
@@ -103,6 +169,8 @@ export default function CalibrationPage() {
     return (
       <CalibrationRunner
         state={state}
+        signedIn={!!user}
+        saveError={saveError}
         onAnswer={persistAnswer}
         onPause={(s) => {
           persist(s);
@@ -232,6 +300,43 @@ const buttonBase =
   "inline-flex items-center justify-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium shadow-paper transition-all hover:-translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal";
 
 /* ────────────────────────────────────────────────────────────────────────────
+ * Unsupported future schema: read-only protection screen
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+function UnsupportedCalibration({ version }: { version: number }) {
+  return (
+    <Frame>
+      <header className="mt-4 mb-6">
+        <SectionTitle>词汇校准 · Vocabulary calibration</SectionTitle>
+        <h1 className="mt-1 font-serif text-3xl font-semibold tracking-tight text-ink">
+          Calibration data from a newer version
+        </h1>
+      </header>
+      <section className="rounded-2xl border border-line bg-surface p-5 shadow-paper">
+        <p className="text-sm text-ink">
+          Your calibration was saved by a newer version of this app (data
+          version {version}) than the one running here. To protect it, this
+          version won&apos;t read or change it: calibration is read-only on
+          this device until the app is updated.
+        </p>
+        <p className="mt-3 text-sm text-muted">
+          Nothing is lost — your calibration, review history, and saved words
+          are untouched. Reading and vocabulary study keep working; new-word
+          filtering from calibration is simply unavailable here in the
+          meantime.
+        </p>
+        <Link
+          href="/vocabulary"
+          className={`${buttonBase} mt-4 border-line bg-surface text-ink`}
+        >
+          <ArrowLeft size={14} /> Back to vocabulary
+        </Link>
+      </section>
+    </Frame>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
  * Setup: comprehensive / quick / scratch
  * ──────────────────────────────────────────────────────────────────────────── */
 
@@ -288,8 +393,10 @@ function CalibrationSetup({
           <p className="mt-1.5 text-sm text-muted">
             Work through the vocabulary of the levels you pick in short blocks
             of ~50 words. You see the Chinese first, say whether you know it,
-            then prove it by picking the meaning. Progress saves after every
-            answer, so you can stop after any block and resume later.
+            then prove it by picking the meaning. Progress is saved on this
+            device after every answer — and synced to your account every few
+            answers and whenever you pause, if you&apos;re signed in — so you
+            can stop after any block and resume later.
           </p>
           <fieldset className="mt-3">
             <legend className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
@@ -507,11 +614,15 @@ type RunnerStage =
 
 function CalibrationRunner({
   state,
+  signedIn,
+  saveError,
   onAnswer,
   onPause,
   onApply,
 }: {
   state: CalibrationState;
+  signedIn: boolean;
+  saveError: boolean;
   onAnswer: (next: CalibrationState, force: boolean) => void;
   onPause: (state: CalibrationState) => void;
   onApply: (state: CalibrationState) => void;
@@ -635,6 +746,16 @@ function CalibrationRunner({
           }}
         />
       </div>
+      <p
+        className={`mt-1.5 text-right text-[11px] ${saveError ? "font-medium text-rose-700" : "text-muted"}`}
+        role={saveError ? "alert" : undefined}
+      >
+        {saveError
+          ? "Saving failed — your latest answers may not be stored yet. Retrying at the next answer or pause."
+          : signedIn
+            ? "Saved on this device after every answer · synced to your account every few answers and on pause"
+            : "Saved on this device after every answer"}
+      </p>
 
       <div className="mt-6 flex min-h-[220px] flex-col items-center justify-center rounded-2xl border border-line bg-surface px-6 py-10 text-center shadow-paper">
         <div className="font-cjk text-6xl text-ink sm:text-7xl">{question.word}</div>

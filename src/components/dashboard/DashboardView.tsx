@@ -12,6 +12,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { SyncLocalProgressButton } from "@/components/auth/SyncLocalProgressButton";
 import { recommendLibraryForLevel } from "@/lib/content/recommend";
 import { dueCounts } from "@/lib/hsk-study/mixedDeck";
+import { emptyCalibrationState } from "@/lib/calibration/state";
 import { getCompletedReadingIds } from "@/lib/library/completedReadings";
 import type { CalibrationState } from "@/types/calibration";
 import type { LearnerProfile } from "@/types/learner";
@@ -41,7 +42,13 @@ export function DashboardView({ libraryItems }: Props) {
       if (!cancelled) {
         setProfile(nextProfile);
         setWords(nextWords);
-        setCalibration(nextCalibration);
+        // Unsupported future-version calibration is read-only; the dashboard
+        // just shows neutral (empty) calibration-derived counts.
+        setCalibration(
+          nextCalibration.kind === "unsupportedVersion"
+            ? emptyCalibrationState()
+            : nextCalibration.state,
+        );
         setCompletedIds(getCompletedReadingIds());
       }
     })();

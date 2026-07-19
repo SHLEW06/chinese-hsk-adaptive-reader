@@ -11,6 +11,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
+import { assertCalibrationOverwriteSafe } from "@/lib/calibration/load";
 import type { CalibrationState } from "@/types/calibration";
 import type { ContentItem } from "@/types/content";
 import type { LearnerProfile } from "@/types/learner";
@@ -118,8 +119,14 @@ export async function getCalibrationState(userId: string): Promise<CalibrationSt
 // remove baseline/result keys, which merge semantics would resurrect.
 export const saveCalibrationState = (userId: string, state: CalibrationState) =>
   calibrationWriteQueue.run(userId, async () => {
+    // Checked inside the queued task so the guard is ordered after every
+    // earlier write: a document written by a newer schema version must never
+    // be replaced by this client.
+    assertCalibrationOverwriteSafe(await getCalibrationState(userId));
     await setDoc(doc(db, "users", userId, "calibration", "main"), state);
-    invalidateCache(userId, "calibration");
+    // The full-document replace we just wrote *is* the document — caching it
+    // keeps the pre-write guard read-free for subsequent queued saves.
+    setCache(cacheKey(userId, "calibration"), state);
   });
 
 /* ---- Imported content ---- */
@@ -198,6 +205,9 @@ export async function batchSyncToCloud(
     await addOp((b) => b.set(doc(db, "users", userId, "profile", "main"), { ...profile, updatedAt: serverTimestamp() }, { merge: true }));
   }
   if (calibration) {
+    // Same future-schema protection as saveCalibrationState: never let a
+    // bulk sync replace a document written by a newer client.
+    assertCalibrationOverwriteSafe(await getCalibrationState(userId));
     // Full replace (not merge) so stale baseline/result keys cannot survive.
     await addOp((b) => b.set(doc(db, "users", userId, "calibration", "main"), calibration));
   }

@@ -1,0 +1,564 @@
+[
+  {
+    "simplified": "还",
+    "traditional": "還",
+    "pinyin": "hái",
+    "primaryGloss": "still",
+    "acceptedGlosses": ["still", "yet", "also"],
+    "rationale": "The source bundles a surname and the huan2 verb with the high-frequency HSK adverb. Select the reviewed HSK adverb reading and keep the other reading separate.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form hai2"
+  },
+  {
+    "simplified": "比",
+    "pinyin": "bǐ",
+    "primaryGloss": "to compare",
+    "acceptedGlosses": ["to compare", "ratio"],
+    "rationale": "Reject the Belgium abbreviation and euphemistic variant before the ordinary HSK comparison sense.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form bi3"
+  },
+  {
+    "simplified": "几",
+    "traditional": "幾",
+    "pinyin": "jǐ",
+    "primaryGloss": "how many",
+    "acceptedGlosses": ["how many", "how much", "several", "a few"],
+    "rationale": "The HSK learner entry is the interrogative/quantity reading, not the small-table homograph or literary ji1 form.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form ji3"
+  },
+  {
+    "simplified": "后",
+    "traditional": "後",
+    "pinyin": "hòu",
+    "primaryGloss": "after",
+    "acceptedGlosses": ["after", "later", "behind", "afterwards"],
+    "rationale": "Prefer the common directional/time form 後 over the surname and royal-title homographs bundled under simplified 后.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, traditional 後 form hou4"
+  },
+  {
+    "simplified": "告诉",
+    "traditional": "告訴",
+    "pinyin": "gào su",
+    "primaryGloss": "to tell; to inform; to let know",
+    "acceptedGlosses": ["to tell; to inform; to let know"],
+    "rationale": "Select the neutral-tone everyday verb rather than the fourth-tone legal sense 'to press charges'.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form gao4 su5"
+  },
+  {
+    "simplified": "坐",
+    "pinyin": "zuò",
+    "primaryGloss": "to sit",
+    "acceptedGlosses": ["to sit", "to take a seat", "to take (a bus, airplane etc)"],
+    "rationale": "Prefer the ordinary verb over the same-pronunciation surname entry.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, lexical form zuo4"
+  },
+  {
+    "simplified": "钱",
+    "traditional": "錢",
+    "pinyin": "qián",
+    "primaryGloss": "money",
+    "acceptedGlosses": ["money", "coin"],
+    "rationale": "Prefer the common lexical meaning over the same-pronunciation surname entry.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, lexical form qian2"
+  },
+  {
+    "simplified": "个",
+    "traditional": "個",
+    "pinyin": "gè",
+    "primaryGloss": "(classifier used before a noun that has no specific classifier)",
+    "acceptedGlosses": ["(classifier used before a noun that has no specific classifier)"],
+    "rationale": "Keep the common generic-classifier sense primary instead of the unrelated ge3 cross-reference.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form ge4"
+  },
+  {
+    "simplified": "和",
+    "pinyin": "hé",
+    "primaryGloss": "(joining two nouns) and; together with; with (Taiwan pr. [hàn])",
+    "acceptedGlosses": ["(joining two nouns) and; together with; with (Taiwan pr. [hàn])"],
+    "rationale": "Select the HSK conjunction reading while preserving the other modern readings separately.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, lexical form he2"
+  },
+  {
+    "simplified": "佛",
+    "pinyin": "Fó",
+    "primaryGloss": "Buddha; Buddhism (abbr. for 佛陀[Fo2 tuo2])",
+    "acceptedGlosses": ["Buddha; Buddhism (abbr. for 佛陀[Fo2 tuo2])"],
+    "rationale": "The HSK noun is the Buddhist term; do not demote it merely because CC-CEDICT capitalizes the reading while an unrelated fu2 homograph exists.",
+    "sourceNote": "CC-CEDICT 2026-07-13, form Fo2"
+  },
+  {
+    "simplified": "的",
+    "pinyin": "de",
+    "primaryGloss": "of; ~'s (possessive particle)",
+    "acceptedGlosses": ["of; ~'s (possessive particle)"],
+    "rationale": "Select the high-frequency neutral-tone structural particle and keep the taxi and target homographs as alternate readings.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form de5"
+  },
+  {
+    "simplified": "了",
+    "pinyin": "le",
+    "primaryGloss": "(completed action marker)",
+    "acceptedGlosses": ["(completed action marker)", "(modal particle indicating change of state, situation now)"],
+    "rationale": "Select the neutral-tone aspect particle rather than the liao3 lexical verb.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form le5"
+  },
+  {
+    "simplified": "要",
+    "pinyin": "yào",
+    "primaryGloss": "to want; to need; to ask for",
+    "acceptedGlosses": ["to want; to need; to ask for", "need to; should"],
+    "rationale": "Select the ordinary yao4 modal and verb reading rather than the yao1 bound form.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form yao4"
+  },
+  {
+    "simplified": "说",
+    "traditional": "說",
+    "pinyin": "shuō",
+    "primaryGloss": "to speak; to talk; to say",
+    "acceptedGlosses": ["to speak; to talk; to say"],
+    "rationale": "Select the everyday shuo1 speech verb rather than the shui4 persuasion reading.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form shuo1"
+  },
+  {
+    "simplified": "好",
+    "pinyin": "hǎo",
+    "primaryGloss": "good",
+    "acceptedGlosses": ["good", "appropriate; proper", "all right!"],
+    "rationale": "Select the common hao3 adjective rather than the hao4 tendency reading.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form hao3"
+  },
+  {
+    "simplified": "会",
+    "traditional": "會",
+    "pinyin": "huì",
+    "primaryGloss": "can; to have the skill; to know how to",
+    "acceptedGlosses": ["can; to have the skill; to know how to", "to be likely to; to be sure to"],
+    "rationale": "Select the common hui4 modal reading rather than the kuai4 accounting reading.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form hui4"
+  },
+  {
+    "simplified": "都",
+    "pinyin": "dōu",
+    "primaryGloss": "all; both; entirely",
+    "acceptedGlosses": ["all; both; entirely"],
+    "rationale": "Select the common dou1 adverb rather than the capital-city reading or surname.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form dou1"
+  },
+  {
+    "simplified": "着",
+    "traditional": "著",
+    "pinyin": "zhe",
+    "primaryGloss": "aspect particle indicating action in progress or ongoing state",
+    "acceptedGlosses": ["aspect particle indicating action in progress or ongoing state"],
+    "rationale": "Select the neutral-tone aspect particle and preserve the zhao1, zhao2, and zhuo2 readings separately.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form zhe5"
+  },
+  {
+    "simplified": "给",
+    "traditional": "給",
+    "pinyin": "gěi",
+    "primaryGloss": "to give",
+    "acceptedGlosses": ["to give", "to", "for"],
+    "rationale": "Select the everyday gei3 verb and preposition rather than the ji3 supply reading.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form gei3"
+  },
+  {
+    "simplified": "那",
+    "pinyin": "nà",
+    "primaryGloss": "(specifier) that; the; those (colloquial pr. [nèi])",
+    "acceptedGlosses": ["(specifier) that; the; those (colloquial pr. [nèi])", "(pronoun) that (referring to persons, things or situations)"],
+    "rationale": "Select the common na4 demonstrative rather than surnames, a variant, or an archaic nuo2 form.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form na4"
+  },
+  {
+    "simplified": "把",
+    "pinyin": "bǎ",
+    "primaryGloss": "(used to put the object before the verb: 把 + {noun} + {verb})",
+    "acceptedGlosses": ["(used to put the object before the verb: 把 + {noun} + {verb})"],
+    "rationale": "Prefer the high-value HSK disposal-construction marker while retaining the handle and classifier senses as secondary meanings.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form ba3"
+  },
+  {
+    "simplified": "看",
+    "pinyin": "kàn",
+    "primaryGloss": "to see; to look at",
+    "acceptedGlosses": ["to see; to look at", "to read", "to watch"],
+    "rationale": "Select the common kan4 perception reading rather than kan1 'to guard'.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form kan4"
+  },
+  {
+    "simplified": "吧",
+    "pinyin": "ba",
+    "primaryGloss": "(modal particle indicating suggestion or surmise)",
+    "acceptedGlosses": ["(modal particle indicating suggestion or surmise)", "...right?", "...OK?"],
+    "rationale": "Select the neutral-tone modal particle rather than the bar loanword or onomatopoeia.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form ba5"
+  },
+  {
+    "simplified": "过",
+    "traditional": "過",
+    "pinyin": "guo",
+    "primaryGloss": "(experienced action marker)",
+    "acceptedGlosses": ["(experienced action marker)"],
+    "rationale": "Select the neutral-tone experiential particle and keep the guo4 verb reading separate.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form guo5"
+  },
+  {
+    "simplified": "没",
+    "traditional": "沒",
+    "pinyin": "méi",
+    "primaryGloss": "(negative prefix for verbs) have not; not",
+    "acceptedGlosses": ["(negative prefix for verbs) have not; not"],
+    "rationale": "Select the common mei2 negative form rather than the mo4 lexical reading.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form mei2"
+  },
+  {
+    "simplified": "中",
+    "pinyin": "zhōng",
+    "primaryGloss": "within; among; in",
+    "acceptedGlosses": ["within; among; in", "middle; center"],
+    "rationale": "Select the common zhong1 location reading and keep zhong4 'to hit' separate.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form zhong1"
+  },
+  {
+    "simplified": "吗",
+    "traditional": "嗎",
+    "pinyin": "ma",
+    "primaryGloss": "(question particle for \"yes-no\" questions)",
+    "acceptedGlosses": ["(question particle for \"yes-no\" questions)"],
+    "rationale": "Select the neutral-tone question particle rather than the ma2 colloquial word or morphine-bound form.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form ma5"
+  },
+  {
+    "simplified": "呢",
+    "pinyin": "ne",
+    "primaryGloss": "particle indicating that a previously asked question is to be applied to the preceding word (\"What about ...?\", \"And ...?\")",
+    "acceptedGlosses": ["particle indicating that a previously asked question is to be applied to the preceding word (\"What about ...?\", \"And ...?\")", "(at the end of a declarative sentence) particle indicating continuation of a state or action"],
+    "rationale": "Select the neutral-tone discourse particle rather than the ni2 noun for woolen material.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form ne5"
+  },
+  {
+    "simplified": "只",
+    "pinyin": "zhǐ",
+    "primaryGloss": "only",
+    "acceptedGlosses": ["only", "merely", "just", "but"],
+    "rationale": "Select the zhi3 adverb and keep the classifier reading distinct.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form zhi3"
+  },
+  {
+    "simplified": "将",
+    "traditional": "將",
+    "pinyin": "jiāng",
+    "primaryGloss": "will",
+    "acceptedGlosses": ["will", "shall"],
+    "rationale": "Select the common jiang1 modal reading rather than the general or literary readings.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form jiang1"
+  },
+  {
+    "simplified": "更",
+    "pinyin": "gèng",
+    "primaryGloss": "more",
+    "acceptedGlosses": ["more", "even more", "further"],
+    "rationale": "Select the common geng4 degree adverb rather than the geng1 change/watch reading.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form geng4"
+  },
+  {
+    "simplified": "地",
+    "pinyin": "de",
+    "primaryGloss": "-ly",
+    "acceptedGlosses": ["-ly", "structural particle: used before a verb or adjective, linking it to preceding modifying adverbial adjunct"],
+    "rationale": "Select the neutral-tone structural particle and keep di4 'earth/ground' separate.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form de5"
+  },
+  {
+    "simplified": "与",
+    "traditional": "與",
+    "pinyin": "yǔ",
+    "primaryGloss": "and",
+    "acceptedGlosses": ["and", "together with"],
+    "rationale": "Select the common yu3 conjunction and keep the yu4 participation reading separate.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form yu3"
+  },
+  {
+    "simplified": "打",
+    "pinyin": "dǎ",
+    "primaryGloss": "to beat",
+    "acceptedGlosses": ["to beat", "to strike", "to hit"],
+    "rationale": "Select the productive da3 verb reading rather than the da2 dozen loanword.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form da3"
+  },
+  {
+    "simplified": "当",
+    "traditional": "當",
+    "pinyin": "dāng",
+    "primaryGloss": "to be",
+    "acceptedGlosses": ["to be", "to act as", "when", "during"],
+    "rationale": "Select the lexical dang1 verb/preposition rather than the same-reading bell onomatopoeia or dang4 reading.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form dang1"
+  },
+  {
+    "simplified": "起来",
+    "traditional": "起來",
+    "pinyin": "qǐ lai",
+    "primaryGloss": "to stand up",
+    "acceptedGlosses": ["to stand up", "to get up"],
+    "rationale": "Select the lexical qi3 lai5 verb while keeping the neutralized directional-complement form in the same reading details.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form qi3 lai5"
+  },
+  {
+    "simplified": "见",
+    "traditional": "見",
+    "pinyin": "jiàn",
+    "primaryGloss": "to see",
+    "acceptedGlosses": ["to see", "to meet"],
+    "rationale": "Select the common jian4 perception verb rather than the xian4 literary reading.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form jian4"
+  },
+  {
+    "simplified": "种",
+    "traditional": "種",
+    "pinyin": "zhǒng",
+    "primaryGloss": "kind",
+    "acceptedGlosses": ["kind", "type", "classifier for types, kinds, sorts"],
+    "rationale": "Select the zhong3 noun/classifier reading and keep zhong4 'to plant' separate.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form zhong3"
+  },
+  {
+    "simplified": "车",
+    "traditional": "車",
+    "pinyin": "chē",
+    "primaryGloss": "car",
+    "acceptedGlosses": ["car", "vehicle"],
+    "rationale": "Select the ordinary che1 vehicle reading rather than the surname or archaic ju1 chariot reading.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form che1"
+  },
+  {
+    "simplified": "听",
+    "traditional": "聽",
+    "pinyin": "tīng",
+    "primaryGloss": "to listen to; to hear",
+    "acceptedGlosses": ["to listen to; to hear", "to heed; to obey"],
+    "rationale": "Select the ordinary ting1 hearing verb rather than the archaic yin3 reading.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form ting1"
+  },
+  {
+    "simplified": "别",
+    "traditional": "別",
+    "pinyin": "bié",
+    "primaryGloss": "don't ...!",
+    "acceptedGlosses": ["don't ...!", "(bound form) other; another; different"],
+    "rationale": "Prefer the high-frequency prohibitive use and keep the surname and bie4 reading out of the primary position.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form bie2"
+  },
+  {
+    "simplified": "东西",
+    "traditional": "東西",
+    "pinyin": "dōng xi",
+    "primaryGloss": "thing",
+    "acceptedGlosses": ["thing", "stuff"],
+    "rationale": "Select the neutral-tone everyday noun rather than dong1 xi1 'east and west'.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form dong1 xi5"
+  },
+  {
+    "simplified": "啦",
+    "pinyin": "la",
+    "primaryGloss": "sentence-final particle, contraction of 了啊, indicating exclamation",
+    "acceptedGlosses": ["sentence-final particle, contraction of 了啊, indicating exclamation"],
+    "rationale": "Select the neutral-tone sentence particle rather than the la1 sound or dialect verb.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form la5"
+  },
+  {
+    "simplified": "长",
+    "traditional": "長",
+    "pinyin": "cháng",
+    "primaryGloss": "long",
+    "acceptedGlosses": ["long", "length"],
+    "rationale": "Select the chang2 adjective and keep zhang3 'to grow/chief' as an alternate pronunciation.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form chang2"
+  },
+  {
+    "simplified": "出来",
+    "traditional": "出來",
+    "pinyin": "chū lái",
+    "primaryGloss": "to come out",
+    "acceptedGlosses": ["to come out", "to appear", "to arise"],
+    "rationale": "Select the lexical chu1 lai2 verb while retaining the neutralized complement form in reading details.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form chu1 lai2"
+  },
+  {
+    "simplified": "地方",
+    "pinyin": "dì fang",
+    "primaryGloss": "place",
+    "acceptedGlosses": ["place", "area", "space", "room", "territory"],
+    "rationale": "Select the neutral-tone everyday noun rather than di4 fang1 'regional/local'.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form di4 fang5"
+  },
+  {
+    "simplified": "在",
+    "pinyin": "zài",
+    "primaryGloss": "(of sb or sth) to be (located) at",
+    "acceptedGlosses": ["(of sb or sth) to be (located) at", "(used before a verb to indicate an action in progress)"],
+    "rationale": "Prefer the common location/function-word use over the less useful first-listed existential sense.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form zai4"
+  },
+  {
+    "simplified": "很",
+    "pinyin": "hěn",
+    "primaryGloss": "very",
+    "acceptedGlosses": ["very", "quite", "awfully"],
+    "rationale": "Prefer a learner-facing degree gloss over the source's metadata-like first label.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form hen3"
+  },
+  {
+    "simplified": "让",
+    "traditional": "讓",
+    "pinyin": "ràng",
+    "primaryGloss": "to let sb do sth",
+    "acceptedGlosses": ["to let sb do sth", "to permit", "to have sb do sth"],
+    "rationale": "Prefer the high-frequency causative/permission sense over the less useful first-listed 'to yield'.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form rang4"
+  },
+  {
+    "simplified": "才",
+    "pinyin": "cái",
+    "primaryGloss": "then and only then",
+    "acceptedGlosses": ["then and only then", "just now", "(before an expression of quantity) only"],
+    "rationale": "Prefer the high-frequency adverbial sense over the source's first-listed noun sense 'ability; talent'.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form cai2"
+  },
+  {
+    "simplified": "被",
+    "pinyin": "bèi",
+    "primaryGloss": "used to indicate passive voice (placed before the doer of the action like \"by\" in English passive-voice sentences, or, if the doer is not mentioned, before the verb)",
+    "acceptedGlosses": ["used to indicate passive voice (placed before the doer of the action like \"by\" in English passive-voice sentences, or, if the doer is not mentioned, before the verb)"],
+    "rationale": "Prefer the high-frequency passive marker over the first-listed noun sense 'quilt'.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form bei4"
+  },
+  {
+    "simplified": "所",
+    "pinyin": "suǒ",
+    "primaryGloss": "particle introducing a relative clause or passive",
+    "acceptedGlosses": ["particle introducing a relative clause or passive", "classifier for houses, small buildings, institutions etc", "place"],
+    "rationale": "Reject the anomalous first-listed 'actually' gloss and select a common grammatical use supported by the HSK record.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form suo3"
+  },
+  {
+    "simplified": "张",
+    "traditional": "張",
+    "pinyin": "zhāng",
+    "primaryGloss": "classifier for flat objects, sheet",
+    "acceptedGlosses": ["classifier for flat objects, sheet", "sheet of paper", "classifier for votes"],
+    "rationale": "Prefer the common classifier over the surname and the first-listed lexical verb 'to open up'.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, lexical form zhang1"
+  },
+  {
+    "simplified": "作为",
+    "traditional": "作為",
+    "pinyin": "zuò wéi",
+    "primaryGloss": "as (in the capacity of)",
+    "acceptedGlosses": ["as (in the capacity of)", "to act as"],
+    "rationale": "Prefer the common prepositional/verb use over the first-listed noun sense 'one's conduct'.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form zuo4 wei2"
+  },
+  {
+    "simplified": "于",
+    "traditional": "於",
+    "pinyin": "yú",
+    "primaryGloss": "(of time or place) in; at; on",
+    "acceptedGlosses": ["(of time or place) in; at; on", "(indicating any indirect relation) to; toward; vis-à-vis; with regard to; for"],
+    "rationale": "Prefer the common modern preposition over the surname and older same-reading form headed by 'to go'.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, modern preposition form yu2"
+  },
+  {
+    "simplified": "同",
+    "pinyin": "tóng",
+    "primaryGloss": "same",
+    "acceptedGlosses": ["same", "similar", "together", "with"],
+    "rationale": "Prefer the common equality sense while keeping the tong4 hutong-bound reading separate.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form tong2"
+  },
+  {
+    "simplified": "便",
+    "pinyin": "biàn",
+    "primaryGloss": "in that case",
+    "acceptedGlosses": ["in that case", "soon afterwards", "convenient"],
+    "rationale": "Prefer a common modern adverbial sense and keep the pian2 bound reading separate.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form bian4"
+  },
+  {
+    "simplified": "两边",
+    "traditional": "兩邊",
+    "pinyin": "liǎng bian",
+    "primaryGloss": "either side",
+    "acceptedGlosses": ["either side", "both sides"],
+    "rationale": "The HSK neutral-tone reading is source-backed but does not normalize to the pinned CC-CEDICT form; preserve the reviewed HSK reading explicitly.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form liang3 bian5"
+  },
+  {
+    "simplified": "是不是",
+    "pinyin": "shì bù shì",
+    "primaryGloss": "is or isn't",
+    "acceptedGlosses": ["is or isn't", "yes or no", "whether or not"],
+    "rationale": "The HSK citation-tone form differs from CC-CEDICT's sandhi form; keep the reviewed HSK pronunciation and meaning.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form shi4 bu4 shi4"
+  },
+  {
+    "simplified": "看得见",
+    "traditional": "看得見",
+    "pinyin": "kàn dé jiàn",
+    "primaryGloss": "can see",
+    "acceptedGlosses": ["can see", "visible"],
+    "rationale": "The HSK complement pronunciation is source-backed but has no normalized CC-CEDICT match; preserve it as a reviewed selection.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form kan4 de2 jian4"
+  },
+  {
+    "simplified": "码头",
+    "traditional": "碼頭",
+    "pinyin": "mǎ tóu",
+    "primaryGloss": "dock",
+    "acceptedGlosses": ["dock", "pier", "wharf"],
+    "rationale": "The HSK full-tone pronunciation is source-backed but differs from CC-CEDICT's neutral-tone form; preserve the reviewed HSK entry.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form ma3 tou2"
+  },
+  {
+    "simplified": "上",
+    "pinyin": "shàng",
+    "primaryGloss": "(bound form) up; upper; above; previous",
+    "acceptedGlosses": ["(bound form) up; upper; above; previous", "first (of multiple parts)", "(noun suffix) on; above"],
+    "rationale": "Prefer the foundational location meaning over the narrower first-listed candidate produced by part-of-speech ranking, and keep shang3 separate.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form shang4"
+  },
+  {
+    "simplified": "处",
+    "traditional": "處",
+    "pinyin": "chù",
+    "primaryGloss": "place",
+    "acceptedGlosses": ["place", "location", "spot", "classifier for locations or items of damage: spot, point"],
+    "rationale": "Select the common chu4 noun/classifier for the HSK learner entry and preserve chu3 verbs under the alternate pronunciation.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form chu4"
+  },
+  {
+    "simplified": "总",
+    "traditional": "總",
+    "pinyin": "zǒng",
+    "primaryGloss": "in every case; always; invariably",
+    "acceptedGlosses": ["in every case; always; invariably", "general; overall", "anyway; after all; eventually; sooner or later"],
+    "rationale": "Prefer the high-frequency HSK adverbial sense over the first-listed bound/adjectival sense.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form zong3"
+  },
+  {
+    "simplified": "至",
+    "pinyin": "zhì",
+    "primaryGloss": "until",
+    "acceptedGlosses": ["until", "to", "to arrive"],
+    "rationale": "Prefer the common formal prepositional use for the HSK learner entry while retaining the lexical verb as a secondary meaning.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, form zhi4"
+  },
+  {
+    "simplified": "利",
+    "pinyin": "lì",
+    "primaryGloss": "benefit",
+    "acceptedGlosses": ["benefit", "advantage", "profit", "favorable"],
+    "rationale": "Prefer the common noun sense over the surname and the first-listed adjective 'sharp'.",
+    "sourceNote": "complete-hsk-vocabulary@7ac65bf, lexical form li4"
+  }
+]

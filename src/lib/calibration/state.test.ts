@@ -9,6 +9,7 @@ import {
   emptyCalibrationState,
   gradeVerification,
   normalizeCalibrationState,
+  reconcileCalibrationPlan,
   recordAnswer,
   resetCalibration,
   returnWordToStudy,
@@ -137,6 +138,26 @@ describe("startComprehensive / recordAnswer / progress", () => {
   it("ignores answers when no calibration is in progress", () => {
     const state = emptyCalibrationState();
     expect(recordAnswer(state, "一", result("known"), NOW)).toBe(state);
+  });
+
+  it("removes unsafe saved-plan words without recording fabricated misses", () => {
+    let state = startedState(["一", "旧", "二"]);
+    state = recordAnswer(state, "一", result("known", "high"), NOW);
+    state = recordAnswer(state, "旧", result("missed"), NOW);
+
+    const reconciled = reconcileCalibrationPlan(
+      state,
+      { 1: ["一", "二"] },
+      new Date("2026-07-15T12:00:00.000Z"),
+    );
+    expect(reconciled.plan?.wordsByLevel[1]).toEqual(["一", "二"]);
+    expect(reconciled.results).toEqual({ "一": result("known", "high") });
+    expect(calibrationProgress(reconciled).next?.word).toBe("二");
+  });
+
+  it("preserves a valid saved plan byte-for-byte for deterministic resume", () => {
+    const state = recordAnswer(startedState(), "一", result("known", "high"), NOW);
+    expect(reconcileCalibrationPlan(state, { 1: ["一", "二", "三", "四"] }, NOW)).toBe(state);
   });
 });
 

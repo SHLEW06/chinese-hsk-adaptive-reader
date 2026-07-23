@@ -56,7 +56,11 @@ export function buildMixedPool({
       simplified: saved.simplified,
       traditional: saved.traditional,
       pinyin: saved.pinyin,
+      primaryReading: saved.primaryReading,
+      primaryGloss: saved.primaryGloss,
+      acceptedGlosses: saved.acceptedGlosses,
       definitions: saved.definitions,
+      secondaryDefinitions: saved.secondaryDefinitions,
       hskLevel: saved.hskLevel,
     };
   };

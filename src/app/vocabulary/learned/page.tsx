@@ -24,10 +24,12 @@ import { getStorageProvider } from "@/lib/storage/storageProvider";
 import type { SrsState } from "@/types/hskStudy";
 import type { WordEntry } from "@/types/dictionary";
 import type { SavedWord } from "@/types/savedWord";
+import { primaryGloss, primaryReading } from "@/lib/dictionary/entryGloss";
 
 interface LearnedRow {
   simplified: string;
   pinyin: string;
+  primaryGloss: string;
   definitions: string[];
   hskLevel?: number | "7-9";
   sourceSentence?: string;
@@ -67,7 +69,8 @@ export default function LearnedWordsPage() {
       if (!entry && !fallback) continue;
       out.push({
         simplified,
-        pinyin: entry?.pinyin ?? fallback?.pinyin ?? "",
+        pinyin: entry ? primaryReading(entry) : fallback ? primaryReading(fallback) : "",
+        primaryGloss: entry ? primaryGloss(entry) : fallback ? primaryGloss(fallback) : "",
         definitions: entry?.definitions ?? fallback?.definitions ?? [],
         hskLevel: entry?.hsk30 ?? entry?.hskLevel ?? fallback?.hskLevel,
         sourceSentence: fallback?.sourceSentence,
@@ -313,7 +316,7 @@ function LearnedCard({
             <span className="shrink-0 text-xs font-medium text-seal/80">{row.pinyin}</span>
           </div>
           <div className="mt-1 line-clamp-2 text-sm text-muted">
-            {row.definitions[0] ?? "—"}
+            {row.primaryGloss || "—"}
           </div>
           {row.sourceSentence && (
             <div className="mt-2 line-clamp-2 border-l-2 pl-2 font-cjk text-[12.5px] italic text-muted"

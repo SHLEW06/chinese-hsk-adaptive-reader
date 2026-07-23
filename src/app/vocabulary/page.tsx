@@ -21,6 +21,11 @@ import {
 import { calibrationMetrics } from "@/lib/calibration/deck";
 import { emptyCalibrationState } from "@/lib/calibration/state";
 import { uid, todayISO } from "@/lib/utils/text";
+import {
+  primaryGloss,
+  primaryReading,
+  toSavedGlossFields,
+} from "@/lib/dictionary/entryGloss";
 import type { CalibrationState } from "@/types/calibration";
 import type { WordEntry } from "@/types/dictionary";
 import type { SavedWord } from "@/types/savedWord";
@@ -49,7 +54,11 @@ function entriesForTab(tab: TabKey, saved: SavedWord[]): WordEntry[] {
       simplified: w.simplified,
       traditional: w.traditional,
       pinyin: w.pinyin,
+      primaryReading: w.primaryReading,
+      primaryGloss: w.primaryGloss,
+      acceptedGlosses: w.acceptedGlosses,
       definitions: w.definitions,
+      secondaryDefinitions: w.secondaryDefinitions,
       hskLevel: w.hskLevel,
     }));
   }
@@ -121,8 +130,7 @@ export default function VocabularyPage() {
       id: uid("word"),
       simplified: entry.simplified,
       traditional: entry.traditional,
-      pinyin: entry.pinyin,
-      definitions: entry.definitions,
+      ...toSavedGlossFields(entry),
       hskLevel: entry.hskLevel,
       status: "new",
       dateSaved: todayISO(),
@@ -144,8 +152,7 @@ export default function VocabularyPage() {
         id: uid("word"),
         simplified: entry.simplified,
         traditional: entry.traditional,
-        pinyin: entry.pinyin,
-        definitions: entry.definitions,
+        ...toSavedGlossFields(entry),
         hskLevel: entry.hskLevel,
         status: "known",
         dateSaved: todayISO(),
@@ -371,10 +378,10 @@ export default function VocabularyPage() {
               >
                 <div className="flex items-baseline justify-between gap-2">
                   <span className="font-cjk text-xl text-ink">{e.simplified}</span>
-                  <span className="shrink-0 text-xs font-medium text-seal/80">{e.pinyin}</span>
+                  <span className="shrink-0 text-xs font-medium text-seal/80">{primaryReading(e)}</span>
                 </div>
                 <div className="mt-1 line-clamp-1 text-sm text-muted group-hover:text-ink">
-                  {e.definitions[0]}
+                  {primaryGloss(e)}
                 </div>
                 <div className="mt-2 flex items-center gap-1.5 text-[11px] text-muted">
                   <HskBadge level={e.hsk30 ?? e.hskLevel} />

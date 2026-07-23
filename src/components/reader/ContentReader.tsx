@@ -14,6 +14,7 @@ import { getStorageProvider } from "@/lib/storage/storageProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useDictionary } from "@/components/dictionary/DictionaryProvider";
 import { uid, todayISO } from "@/lib/utils/text";
+import { toSavedGlossFields } from "@/lib/dictionary/entryGloss";
 import type { WordEntry } from "@/types/dictionary";
 import type { SavedWord } from "@/types/savedWord";
 
@@ -86,8 +87,7 @@ export function ContentReader({
       id: uid("word"),
       simplified: entry.simplified,
       traditional: entry.traditional,
-      pinyin: entry.pinyin,
-      definitions: entry.definitions,
+      ...toSavedGlossFields(entry),
       hskLevel: entry.hskLevel,
       sourceSentence: sentence,
       status: "new",
@@ -108,8 +108,7 @@ export function ContentReader({
           id: uid("word"),
           simplified: entry.simplified,
           traditional: entry.traditional,
-          pinyin: entry.pinyin,
-          definitions: entry.definitions,
+          ...toSavedGlossFields(entry),
           hskLevel: entry.hskLevel,
           status: "known",
           dateSaved: todayISO(),

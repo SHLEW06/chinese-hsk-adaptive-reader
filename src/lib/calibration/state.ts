@@ -119,6 +119,42 @@ export function recordAnswer(
   };
 }
 
+/**
+ * Remove words that are no longer eligible after an audited dictionary
+ * rebuild. Existing answers for retained words and their ordering stay
+ * untouched, so pause/resume remains deterministic without fabricating
+ * "missed" results for vanished or unsafe entries.
+ */
+export function reconcileCalibrationPlan(
+  state: CalibrationState,
+  allowedWordsByLevel: Partial<Record<CalibrationLevel, string[]>>,
+  now: Date,
+): CalibrationState {
+  if (state.status !== "inProgress" || !state.plan) return state;
+
+  let changed = false;
+  const wordsByLevel: Partial<Record<CalibrationLevel, string[]>> = {};
+  const retained = new Set<string>();
+  for (const level of state.plan.levels) {
+    const allowed = new Set(allowedWordsByLevel[level] ?? []);
+    const existing = state.plan.wordsByLevel[level] ?? [];
+    const filtered = existing.filter((word) => allowed.has(word));
+    if (filtered.length !== existing.length) changed = true;
+    wordsByLevel[level] = filtered;
+    for (const word of filtered) retained.add(word);
+  }
+  if (!changed) return state;
+
+  return {
+    ...state,
+    plan: { ...state.plan, wordsByLevel },
+    results: Object.fromEntries(
+      Object.entries(state.results).filter(([word]) => retained.has(word)),
+    ),
+    updatedAt: now.toISOString(),
+  };
+}
+
 export interface CalibrationProgress {
   totalWords: number;
   answered: number;

@@ -16,7 +16,10 @@
     "deploy:hosting": "firebase deploy --only hosting",
     "deploy:firestore": "firebase deploy --only firestore",
     "fetch:dict-sources": "node scripts/fetch-dict-sources.mjs",
+    "check:dict-sources": "node scripts/fetch-dict-sources.mjs --check",
     "build:dict": "node scripts/build-dictionary.mjs",
+    "audit:dict": "node scripts/audit-dictionary.mjs",
+    "check:dict-audit": "node scripts/audit-dictionary.mjs --check",
     "build:hsk1-glossary": "node scripts/build-hsk1-glossary.mjs --level 1",
     "check:hsk1-library": "node scripts/build-hsk1-glossary.mjs --level 1 --check",
     "build:hsk2-glossary": "node scripts/build-hsk1-glossary.mjs --level 2",
@@ -33,7 +36,7 @@
     "library:normalize": "node scripts/normalize-library-content.mjs --write",
     "hsk:coverage": "npm run library:check && node scripts/hsk-coverage.mjs",
     "check:hsk-coverage": "npm run library:check && node scripts/hsk-coverage.mjs --check",
-    "validate": "npm run lint && npm run typecheck && npm run typecheck:functions && npm run test:run && npm run check:hsk-coverage && npm run build"
+    "validate": "npm run check:dict-sources && npm run lint && npm run typecheck && npm run typecheck:functions && npm run test:run && npm run check:dict-audit && npm run check:hsk-coverage && npm run build"
   },
   "dependencies": {
     "firebase": "^12.15.0",

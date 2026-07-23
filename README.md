@@ -98,7 +98,9 @@ through spaced repetition.
   reading, so you can see whether you'd pass a band today.
 
 ### Dictionary
-- ~121k entries from CC-CEDICT plus HSK 3.0 level tags merged in. Searchable
+- ~121k pronunciation-aware entries from CC-CEDICT and the pinned HSK source.
+  Each entry carries a learner primary gloss, accepted glosses, provenance,
+  confidence, audit flags, and separately modeled alternate readings. Searchable
   by Chinese (prefix), tone-insensitive pinyin, or English substring.
 - Lazy-loaded from `public/dict/dictionary.min.json` and persisted via
   IndexedDB so subsequent loads are instant.
@@ -169,9 +171,10 @@ git clone https://github.com/<you>/chinese-hsk-adaptive-reader.git
 cd chinese-adaptive-reader
 npm install
 
-# One-time: build the CC-CEDICT dictionary artifact
+# Materialize hash-pinned sources and build the audited dictionary artifact
 npm run fetch:dict-sources
 npm run build:dict
+npm run audit:dict
 
 # Copy the env template and fill in your Firebase Web SDK config
 cp .env.example .env.local
@@ -183,8 +186,17 @@ npm run dev
 
 The dictionary artifact lives at `public/dict/dictionary.min.json`. It's not
 committed; a `prebuild` guard fails the build with a clear message if you
-haven't generated it. Once built it's ~5–10 MB and is fetched lazily on first
-read.
+haven't generated it. Once built it is about 21 MB before transport compression
+and is fetched lazily on first read.
+
+The build uses the committed CC-CEDICT snapshot released at
+`2026-07-13T07:02:08Z` and `complete-hsk-vocabulary` commit
+`7ac65bf1a6387d35f1ade478906172a19311c7f9`. Both source files are SHA-256
+verified. `scripts/dictionary-overrides.json` contains reviewed, source-exact
+selections for ambiguous common entries; uncertain entries remain in the
+dictionary with `review` confidence and a pending manual-review status.
+`npm run audit:dict` writes a compact tracked report plus a full compressed
+local report under `artifacts/`.
 
 ## Validation and contributing
 
@@ -263,10 +275,13 @@ dashboard uploads existing browser progress only when the user opts in.
 
 ## Acknowledgments & licensing
 
-- **[CC-CEDICT](https://cc-cedict.org/wiki/)** (CC-BY-SA 4.0) — the
-  community-maintained Chinese-English dictionary that powers word lookups.
+- **[CC-CEDICT](https://cc-cedict.org/wiki/)** (CC BY-SA 4.0) — the
+  community-maintained Chinese-English dictionary that powers word lookups;
+  this repository redistributes the pinned 2026-07-13 snapshot in compressed
+  form under the same license.
 - **[complete-hsk-vocabulary](https://github.com/drkameleon/complete-hsk-vocabulary)** —
-  aggregated HSK 2.0 / 3.0 word lists.
+  aggregated HSK 2.0 / 3.0 word lists, pinned to commit `7ac65bf1a638` and used
+  under its MIT license.
 - **[pinyin-pro](https://github.com/zh-lx/pinyin-pro)** — fallback pinyin
   annotation.
 - All library passages are original, written for learning purposes.
@@ -274,7 +289,8 @@ dashboard uploads existing browser progress only when the user opts in.
 The generated dictionary artifact (`public/dict/dictionary.min.json`) is a
 derivative work and is governed by CC-BY-SA 4.0. The app's own source code
 is separate from the dictionary data — release under whichever license fits
-your fork.
+your fork. See [Third-party notices](THIRD_PARTY_NOTICES.md) for the complete
+source pins, attribution, license text, and dictionary modification notice.
 
 ## Disclaimer
 

@@ -6,6 +6,7 @@ import { hsk4Glossary } from "@/data/hsk4Glossary";
 import { hsk5Glossary } from "@/data/hsk5Glossary";
 import { hsk6Glossary } from "@/data/hsk6Glossary";
 import type { WordEntry } from "@/types/dictionary";
+import { isCalibrationSuitable } from "./entryGloss";
 
 /**
  * Mutable module-level dictionary index.
@@ -142,6 +143,11 @@ export function getByHskLevel(level: number | "7-9"): WordEntry[] {
   return out;
 }
 
+/** HSK entries safe to use in scored multiple-choice calibration. */
+export function getCalibrationByHskLevel(level: number): WordEntry[] {
+  return getByHskLevel(level).filter(isCalibrationSuitable);
+}
+
 /** Frequent words that are not in any HSK list, ordered by frequency. */
 export function getCommonNonHsk(limit = 5000): WordEntry[] {
   const out: WordEntry[] = [];
@@ -200,7 +206,10 @@ export function searchEntries(query: string, opts: SearchEntriesOptions = {}): W
     if (out.length < limit) {
       for (const e of _index.values()) {
         if (out.length >= limit) break;
-        if (e.definitions.some((d) => d.toLowerCase().includes(qLower))) push(e);
+        const readingDefinitions = e.readings?.flatMap((reading) => reading.definitions) ?? [];
+        if ([...e.definitions, ...(e.secondaryDefinitions ?? []), ...readingDefinitions].some(
+          (definition) => definition.toLowerCase().includes(qLower),
+        )) push(e);
       }
     }
   }

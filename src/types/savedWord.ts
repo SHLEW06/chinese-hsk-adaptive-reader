@@ -5,7 +5,11 @@ export interface SavedWord {
   simplified: string;
   traditional?: string;
   pinyin: string;
+  primaryReading?: string;
+  primaryGloss?: string;
+  acceptedGlosses?: string[];
   definitions: string[];
+  secondaryDefinitions?: string[];
   hskLevel?: number;
   sourceSentence?: string;
   status: SavedWordStatus;

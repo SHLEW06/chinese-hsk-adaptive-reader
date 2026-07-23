@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-19T00:00:00-04:00",
+  "branch": "fix/dictionary-definition-audit",
+  "baselineCommit": "acbddc6",
+  "dictionarySha256": "6d4d6dfe3cd876c7fa4038c7d2229de69b2fb07c9f6b44e8df40637b7c7790c8",
+  "method": "Metrics captured after rebuilding the untouched first-record/flattened-definition generator from the pinned local source files. Material-difference and calibration-unsuitable counts are deterministic heuristics, not human correctness claims.",
+  "totals": {
+    "generatedEntries": 120992,
+    "hsk1To6Entries": 5363,
+    "multiplePronunciations": 1247,
+    "hskMultiplePronunciations": 284,
+    "hskReadingsWithoutCedictMatch": 31,
+    "primaryGlossesContainingSurname": 866,
+    "hskPrimaryGlossesContainingSurname": 145,
+    "properNamePrimaryGlosses": 19233,
+    "hskProperNamePrimaryGlosses": 242,
+    "emptyDefinitions": 0,
+    "longFirstDefinitionsOver160Characters": 589,
+    "duplicateMeaningEntries": 10,
+    "flattenedPronunciationEntries": 1247,
+    "hskLearnerMeaningMateriallyDifferentFromOldPrimary": 383,
+    "unsuitableCalibrationEntries": 288,
+    "ambiguousOrUnsuitableCalibrationEntries": 515
+  },
+  "hsk1To6ByLevel": {
+    "1": 506,
+    "2": 750,
+    "3": 953,
+    "4": 972,
+    "5": 1059,
+    "6": 1123
+  },
+  "markerLedFirstDefinitions": {
+    "surname": 672,
+    "variantOf": 1837,
+    "oldVariantOf": 482,
+    "archaic": 96,
+    "dialect": 362,
+    "see": 4067,
+    "abbreviation": 128,
+    "usedIn": 613
+  },
+  "hskMarkerLedFirstDefinitions": {
+    "surname": 143,
+    "variantOf": 82,
+    "oldVariantOf": 20,
+    "archaic": 0,
+    "dialect": 2,
+    "see": 17,
+    "abbreviation": 7,
+    "usedIn": 15
+  }
+}

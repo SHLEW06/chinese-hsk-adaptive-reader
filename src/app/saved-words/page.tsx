@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { getStorageProvider } from "@/lib/storage/storageProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import type { SavedWord, SavedWordStatus } from "@/types/savedWord";
+import { primaryGloss, primaryReading } from "@/lib/dictionary/entryGloss";
 
 type StatusFilter = SavedWordStatus | "all";
 
@@ -57,8 +58,8 @@ export default function SavedWordsPage() {
       [
         w.simplified,
         w.traditional ?? "",
-        w.pinyin,
-        w.definitions.join(" / "),
+        primaryReading(w),
+        [primaryGloss(w), ...(w.secondaryDefinitions ?? w.definitions.slice(1))].join(" / "),
         w.hskLevel ?? "",
         w.status,
         (w.sourceSentence ?? "").replace(/\n/g, " "),

@@ -4,6 +4,11 @@ import type {
 } from "@/types/calibration";
 import type { WordEntry } from "@/types/dictionary";
 import { CALIBRATION_CONFIG } from "./config";
+import {
+  glossComparisonKeys,
+  isCalibrationSuitable,
+  primaryGloss,
+} from "@/lib/dictionary/entryGloss";
 
 /**
  * Deterministic multiple-choice question generation. No AI grading, no
@@ -36,7 +41,7 @@ function mulberry32(seed: number): () => number {
 
 /** The meaning string a question shows for a word. */
 export function meaningLabel(entry: WordEntry): string {
-  return entry.definitions[0]?.trim() ?? "";
+  return primaryGloss(entry);
 }
 
 /**
@@ -51,11 +56,15 @@ export function buildQuestion(
   pool: WordEntry[],
   seed: number,
 ): CalibrationQuestion {
+  if (!isCalibrationSuitable(entry)) {
+    throw new Error(`Calibration word is not source-audited: ${entry.simplified}`);
+  }
   const rand = mulberry32(hashWord(seed, entry.simplified));
   const correct = meaningLabel(entry);
   const wanted = CALIBRATION_CONFIG.optionCount - 1;
 
-  const used = new Set<string>([normalizeMeaning(correct)]);
+  const usedLabels = new Set<string>([normalizeMeaning(correct)]);
+  const usedGlossKeys = glossComparisonKeys(entry);
   const distractors: string[] = [];
 
   // Walk the pool from a seeded start offset so different words sample
@@ -64,11 +73,15 @@ export function buildQuestion(
   for (let step = 0; step < pool.length && distractors.length < wanted; step++) {
     const candidate = pool[(start + step) % pool.length];
     if (candidate.simplified === entry.simplified) continue;
+    if (!isCalibrationSuitable(candidate)) continue;
     const label = meaningLabel(candidate);
     if (!label) continue;
     const norm = normalizeMeaning(label);
-    if (used.has(norm)) continue;
-    used.add(norm);
+    if (usedLabels.has(norm)) continue;
+    const candidateKeys = glossComparisonKeys(candidate);
+    if ([...candidateKeys].some((key) => usedGlossKeys.has(key))) continue;
+    usedLabels.add(norm);
+    for (const key of candidateKeys) usedGlossKeys.add(key);
     distractors.push(label);
   }
 

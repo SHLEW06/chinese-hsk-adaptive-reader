@@ -14,11 +14,12 @@ import {
 } from "lucide-react";
 import { useDictionary } from "@/components/dictionary/DictionaryProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { getByHskLevel, getEntry } from "@/lib/dictionary/dictionary";
+import { getCalibrationByHskLevel, getEntry } from "@/lib/dictionary/dictionary";
 import { getStorageProvider } from "@/lib/storage/storageProvider";
 import { loadSrsMap } from "@/lib/hsk-study/storage";
 import { HskBadge } from "@/components/ui/Badge";
 import { buildQuestion } from "@/lib/calibration/questionGen";
+import { primaryReading } from "@/lib/dictionary/entryGloss";
 import { scoreAnswer } from "@/lib/calibration/scoring";
 import { calibrationMetrics } from "@/lib/calibration/deck";
 import {
@@ -26,6 +27,7 @@ import {
   applyQuickSetup,
   applyStartFromScratch,
   calibrationProgress,
+  reconcileCalibrationPlan,
   recordAnswer,
   resetCalibration,
   returnWordToStudy,
@@ -54,6 +56,7 @@ export default function CalibrationPage() {
   const [running, setRunning] = useState(false);
   const [setupMode, setSetupMode] = useState(false);
   const [saveError, setSaveError] = useState(false);
+  const [planAudited, setPlanAudited] = useState(false);
   // Latest state + count of answers not yet flushed to the cloud, readable
   // from unmount/pagehide handlers without re-subscribing on every answer.
   const latestState = useRef<CalibrationState | null>(null);
@@ -61,6 +64,7 @@ export default function CalibrationPage() {
 
   useEffect(() => {
     let cancelled = false;
+    setPlanAudited(false);
     void getStorageProvider(user)
       .getCalibrationState()
       .then((load) => {
@@ -150,6 +154,30 @@ export default function CalibrationPage() {
     };
   }, [user]);
 
+  useEffect(() => {
+    if (!ready || !state) return;
+    if (state.status !== "inProgress" || !state.plan) {
+      setPlanAudited(true);
+      return;
+    }
+    const allowedWordsByLevel: Partial<Record<CalibrationLevel, string[]>> = {};
+    for (const level of state.plan.levels) {
+      allowedWordsByLevel[level] = getCalibrationByHskLevel(level).map(
+        (entry) => entry.simplified,
+      );
+    }
+    const reconciled = reconcileCalibrationPlan(
+      state,
+      allowedWordsByLevel,
+      new Date(),
+    );
+    if (reconciled !== state) {
+      persist(reconciled);
+      return;
+    }
+    setPlanAudited(true);
+  }, [ready, state, persist]);
+
   if (unsupportedVersion !== null) {
     return <UnsupportedCalibration version={unsupportedVersion} />;
   }
@@ -160,6 +188,17 @@ export default function CalibrationPage() {
         <div className="mt-10 text-center text-sm text-muted">
           <div className="mx-auto mb-3 h-8 w-8 animate-pulse rounded-full bg-seal-soft" />
           Loading your calibration…
+        </div>
+      </Frame>
+    );
+  }
+
+  if (state.status === "inProgress" && (!ready || !planAudited)) {
+    return (
+      <Frame>
+        <div className="mt-10 text-center text-sm text-muted">
+          <div className="mx-auto mb-3 h-8 w-8 animate-pulse rounded-full bg-seal-soft" />
+          Checking the saved plan against the audited dictionary…
         </div>
       </Frame>
     );
@@ -193,7 +232,7 @@ export default function CalibrationPage() {
         onComprehensive={(levels) => {
           const wordsByLevel: Partial<Record<CalibrationLevel, string[]>> = {};
           for (const level of levels) {
-            wordsByLevel[level] = getByHskLevel(level).map((e) => e.simplified);
+            wordsByLevel[level] = getCalibrationByHskLevel(level).map((e) => e.simplified);
           }
           persist(
             startComprehensive(state, {
@@ -210,7 +249,7 @@ export default function CalibrationPage() {
           const wordsByLevel: Partial<Record<CalibrationLevel, string[]>> = {};
           for (const l of ALL_LEVELS) {
             if (l >= level) break;
-            wordsByLevel[l] = getByHskLevel(l).map((e) => e.simplified);
+            wordsByLevel[l] = getCalibrationByHskLevel(l).map((e) => e.simplified);
           }
           persist(
             applyQuickSetup(state, {
@@ -634,22 +673,13 @@ function CalibrationRunner({
   const entry = current ? getEntry(current.word) : undefined;
   const question: CalibrationQuestion | null = useMemo(() => {
     if (!current || !entry) return null;
-    return buildQuestion(entry, current.level, getByHskLevel(current.level), state.seed ?? 0);
+    return buildQuestion(
+      entry,
+      current.level,
+      getCalibrationByHskLevel(current.level),
+      state.seed ?? 0,
+    );
   }, [current, entry, state.seed]);
-
-  // A word whose dictionary entry vanished (data rebuild between sessions)
-  // can't be asked; score it "missed" so it goes to learning rather than
-  // silently blocking the plan.
-  useEffect(() => {
-    if (!current || entry || state.status !== "inProgress") return;
-    const result: CalibrationWordResult = {
-      outcome: "missed",
-      confidence: "low",
-      answeredAt: new Date().toISOString(),
-      level: current.level,
-    };
-    onAnswer(recordAnswer(state, current.word, result, new Date()), false);
-  }, [current, entry, state, onAnswer]);
 
   // The answer is scored at commit but only *recorded* on advance — recording
   // moves progress.next to the following word, which would swap the prompt
@@ -870,7 +900,7 @@ function RevealPanel({
         : "No problem — this word joins your learning queue.";
   return (
     <div className="mt-6 space-y-2" role="status">
-      <div className="text-lg font-medium text-seal">{entry.pinyin}</div>
+      <div className="text-lg font-medium text-seal">{primaryReading(entry)}</div>
       <div className="mx-auto max-w-md break-words text-base text-ink">
         {question.options[question.answer]}
       </div>

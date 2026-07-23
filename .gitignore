@@ -27,6 +27,7 @@ firebase-debug.*.log
 # ───── Dictionary build inputs / output (large, regenerable) ─────
 /data-sources
 /public/dict
+/artifacts/dictionary-audit.*
 
 # ───── Editor / OS ─────
 .DS_Store

@@ -10,8 +10,10 @@ import {
 import { useSearchParams, useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { HskBadge } from "@/components/ui/Badge";
+import { EntryMeanings } from "@/components/dictionary/EntryMeanings";
 import { useDictionary } from "@/components/dictionary/DictionaryProvider";
 import { searchEntries } from "@/lib/dictionary/dictionary";
+import { primaryReading } from "@/lib/dictionary/entryGloss";
 import type { WordEntry } from "@/types/dictionary";
 
 function DictionarySearch() {
@@ -147,7 +149,7 @@ function DictionarySearch() {
                   {e.traditional && e.traditional !== e.simplified && (
                     <span className="font-cjk text-base text-muted">{e.traditional}</span>
                   )}
-                  <span className="text-sm font-medium text-seal/85">{e.pinyin}</span>
+                  <span className="text-sm font-medium text-seal/85">{primaryReading(e)}</span>
                   <span className="ml-auto flex items-center gap-1.5">
                     <HskBadge level={e.hsk30 ?? e.hskLevel} />
                     {e.frequency !== undefined && (
@@ -157,28 +159,7 @@ function DictionarySearch() {
                     )}
                   </span>
                 </div>
-                <ol className="mt-2.5 space-y-1 text-sm text-ink">
-                  {e.definitions.map((d, i) => (
-                    <li key={i} className="flex gap-2">
-                      <span className="mt-0.5 shrink-0 text-seal/50">{i + 1}.</span>
-                      <span>{d}</span>
-                    </li>
-                  ))}
-                </ol>
-                {e.readings && e.readings.length > 0 && (
-                  <div className="mt-3 border-t border-line/70 pt-2.5 text-xs text-muted">
-                    <div className="mb-1 font-semibold uppercase tracking-wide text-seal/80">
-                      Other readings
-                    </div>
-                    <ul className="space-y-0.5">
-                      {e.readings.map((r, i) => (
-                        <li key={i}>
-                          <span className="font-medium text-ink">{r.pinyin}</span> — {r.definitions.join("; ")}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                <EntryMeanings entry={e} />
               </li>
             ))}
           </ul>

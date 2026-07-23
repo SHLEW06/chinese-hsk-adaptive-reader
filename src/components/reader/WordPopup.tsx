@@ -2,6 +2,8 @@
 
 import { X, Bookmark, Check } from "lucide-react";
 import { HskBadge } from "@/components/ui/Badge";
+import { EntryMeanings } from "@/components/dictionary/EntryMeanings";
+import { primaryReading } from "@/lib/dictionary/entryGloss";
 import { lookup } from "@/lib/dictionary/lookup";
 import { getPinyinFallback } from "@/lib/dictionary/pinyinFallback";
 import { containsCJK } from "@/lib/utils/text";
@@ -60,7 +62,7 @@ export function WordPopup({
             {known && (
               <div className="mt-2 flex items-baseline gap-2 text-sm">
                 <span className="font-mono text-[15px]" style={{ color: "var(--seal)" }}>
-                  {known.pinyin}
+                  {primaryReading(known)}
                 </span>
                 {known.traditional && known.traditional !== known.simplified && (
                   <span
@@ -115,23 +117,7 @@ export function WordPopup({
               )}
             </div>
 
-            <ol className="mt-3 space-y-1.5">
-              {known.definitions.map((d, i) => (
-                <li
-                  key={i}
-                  className="flex gap-2 font-serif text-[15px]"
-                  style={{ color: "var(--ink)" }}
-                >
-                  <span
-                    className="mt-0.5 shrink-0 font-mono text-xs"
-                    style={{ color: "color-mix(in srgb, var(--seal) 70%, transparent)" }}
-                  >
-                    {i + 1}.
-                  </span>
-                  <span>{d}</span>
-                </li>
-              ))}
-            </ol>
+            <EntryMeanings entry={known} />
 
             {known.examples?.[0] && (
               <div

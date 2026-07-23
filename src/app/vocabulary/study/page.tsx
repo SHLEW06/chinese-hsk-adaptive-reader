@@ -54,7 +54,11 @@ function savedToEntry(word: SavedWord): WordEntry {
     simplified: word.simplified,
     traditional: word.traditional,
     pinyin: word.pinyin,
+    primaryReading: word.primaryReading,
+    primaryGloss: word.primaryGloss,
+    acceptedGlosses: word.acceptedGlosses,
     definitions: word.definitions,
+    secondaryDefinitions: word.secondaryDefinitions,
     hskLevel: word.hskLevel,
   };
 }

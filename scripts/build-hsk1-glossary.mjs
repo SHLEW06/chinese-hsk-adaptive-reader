@@ -230,9 +230,11 @@ if (unresolved.size > 0) {
 
 const entries = [...selected.values()].sort((a, b) => a.s.localeCompare(b.s, "zh-Hans-CN"));
 const wordEntries = entries.map((entry) => {
+  const primaryGloss = entry.g ?? entry.d[0] ?? "";
   const result = {
     simplified: entry.s,
     pinyin: entry.p,
+    primaryGloss,
     definitions: entry.d,
   };
   if (entry.t) result.traditional = entry.t;
@@ -242,6 +244,10 @@ const wordEntries = entries.map((entry) => {
       definitions: reading.d,
     }));
   }
+  if (entry.ds) result.definitionSource = entry.ds;
+  if (entry.dc) result.definitionConfidence = entry.dc;
+  if (entry.mr) result.manualReviewStatus = entry.mr;
+  if (entry.af) result.auditFlags = entry.af;
   if (entry.h3 !== undefined) result.hsk30 = entry.h3;
   if (entry.h2 !== undefined) result.hsk20 = entry.h2;
   if (entry.hl !== undefined) result.hskLevel = entry.hl;

@@ -1,5 +1,6 @@
 import { segment } from "@/lib/segmentation/segment";
 import { getPinyinFallback } from "@/lib/dictionary/pinyinFallback";
+import { primaryGloss, primaryReading } from "@/lib/dictionary/entryGloss";
 import { isCJK } from "@/lib/utils/text";
 import { detectors } from "./grammarPatterns";
 import type { GrammarPoint, PhraseBreakdownItem, SentenceExplanation } from "@/types/grammar";
@@ -9,7 +10,7 @@ const roughGloss = (sentence: string): string =>
   segment(sentence)
     .filter((t) => t.kind !== "other" || t.text.trim())
     .map((t) =>
-      t.entry ? t.entry.definitions[0].split(";")[0].replace(/\(.*?\)/g, "").trim() : t.text,
+      t.entry ? primaryGloss(t.entry).split(";")[0].replace(/\(.*?\)/g, "").trim() : t.text,
     )
     .filter(Boolean)
     .join(" ");
@@ -22,8 +23,8 @@ const buildBreakdown = (sentence: string): PhraseBreakdownItem[] =>
     .filter((t) => t.kind !== "other" && isCJK(t.text[0]))
     .map((t) => ({
       phrase: t.text,
-      pinyin: t.entry?.pinyin ?? getPinyinFallback(t.text),
-      meaning: t.entry?.definitions[0] ?? "Dictionary entry unavailable",
+      pinyin: t.entry ? primaryReading(t.entry) : getPinyinFallback(t.text),
+      meaning: t.entry ? primaryGloss(t.entry) : "Dictionary entry unavailable",
       note: t.entry?.partOfSpeech,
     }));
 

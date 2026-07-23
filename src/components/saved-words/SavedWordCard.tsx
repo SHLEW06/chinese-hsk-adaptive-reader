@@ -2,6 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { hskColor } from "@/lib/dictionary/hsk";
+import { primaryGloss, primaryReading } from "@/lib/dictionary/entryGloss";
 import type { SavedWord, SavedWordStatus } from "@/types/savedWord";
 
 export function SavedWordCard({
@@ -18,12 +19,12 @@ export function SavedWordCard({
       <div className="min-w-[2.75rem] font-cjk text-2xl">{word.simplified}</div>
       <div className="min-w-0 flex-1">
         <div className="text-xs text-muted">
-          {word.pinyin}
+          {primaryReading(word)}
           {word.hskLevel ? (
             <span style={{ color: hskColor(word.hskLevel) }}> · HSK {word.hskLevel}</span>
           ) : null}
         </div>
-        <div className="truncate text-sm">{word.definitions[0]}</div>
+        <div className="truncate text-sm">{primaryGloss(word)}</div>
         {word.sourceSentence && (
           <div className="mt-0.5 truncate font-cjk text-xs italic text-muted">
             “{word.sourceSentence}”

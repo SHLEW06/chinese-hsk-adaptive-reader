@@ -4,7 +4,15 @@ import { buildQuestion, meaningLabel } from "./questionGen";
 import type { WordEntry } from "@/types/dictionary";
 
 function entry(simplified: string, definition: string): WordEntry {
-  return { simplified, pinyin: "x", definitions: [definition] };
+  return {
+    simplified,
+    pinyin: "x",
+    primaryGloss: definition,
+    definitions: [definition],
+    definitionSource: "cedict",
+    definitionConfidence: "high",
+    manualReviewStatus: "not-required",
+  };
 }
 
 const POOL: WordEntry[] = [
@@ -61,11 +69,90 @@ describe("buildQuestion", () => {
     expect(q.options.length).toBeGreaterThanOrEqual(1);
     expect(q.options.length).toBeLessThanOrEqual(4);
   });
+
+  it("rejects an unsafe or legacy fallback prompt", () => {
+    expect(() =>
+      buildQuestion(
+        { simplified: "旧", pinyin: "jiù", definitions: ["legacy fallback"] },
+        1,
+        POOL,
+        3,
+      ),
+    ).toThrow(/not source-audited/);
+    expect(() =>
+      buildQuestion(
+        {
+          ...entry("某", "surname Mou"),
+          definitionConfidence: "review",
+          manualReviewStatus: "pending",
+        },
+        1,
+        POOL,
+        3,
+      ),
+    ).toThrow(/not source-audited/);
+  });
 });
 
 describe("meaningLabel", () => {
-  it("uses the first definition, trimmed", () => {
-    expect(meaningLabel(entry("好", "  good "))).toBe("good");
+  it("prefers primaryGloss and remains backward compatible", () => {
+    expect(meaningLabel({ ...entry("好", "fine"), primaryGloss: "  good " })).toBe("good");
+    expect(meaningLabel(entry("旧", "  legacy "))).toBe("legacy");
     expect(meaningLabel({ simplified: "x", pinyin: "x", definitions: [] })).toBe("");
+  });
+});
+
+describe("dictionary-quality integration", () => {
+  it("never presents an accepted synonym as a competing option", () => {
+    const target = {
+      ...entry("好", "fine"),
+      primaryGloss: "good",
+      acceptedGlosses: ["good", "fine"],
+    };
+    const synonym = {
+      ...entry("佳", "fine"),
+      primaryGloss: "fine",
+      acceptedGlosses: ["fine", "good"],
+    };
+    const pool = [target, synonym, entry("坏", "bad"), entry("大", "large"), entry("小", "small")];
+    const question = buildQuestion(target, 1, pool, 11);
+    expect(question.options).toContain("good");
+    expect(question.options).not.toContain("fine");
+  });
+
+  it("does not use alternate meanings from the same spelling as distractors", () => {
+    const target = {
+      ...entry("还", "still"),
+      primaryGloss: "still",
+      readings: [{ pinyin: "huán", primaryGloss: "to return", definitions: ["to return"] }],
+    };
+    const sameWordAlternate = { ...entry("还", "to return"), pinyin: "huán" };
+    const pool = [target, sameWordAlternate, entry("给", "to give"), entry("走", "to walk"), entry("看", "to see")];
+    const question = buildQuestion(target, 1, pool, 29);
+    expect(question.options).not.toContain("to return");
+  });
+
+  it("rejects review-only and metadata-like distractors", () => {
+    const unsafe = {
+      ...entry("某", "surname Mou"),
+      definitionConfidence: "review" as const,
+      auditFlags: ["primary-surname"],
+    };
+    const pool = [entry("一", "one"), unsafe, entry("二", "two"), entry("三", "three"), entry("四", "four")];
+    const question = buildQuestion(pool[0], 1, pool, 3);
+    expect(question.options).not.toContain("surname Mou");
+  });
+
+  it("keeps manually reviewed archaic labels out of distractors", () => {
+    const reviewed = {
+      ...entry("给予", "(literary) to give; to accord; to render"),
+      primaryGloss: "(literary) to give; to accord; to render",
+      definitionConfidence: "high" as const,
+      manualReviewStatus: "reviewed" as const,
+      auditFlags: ["primary-archaic"],
+    };
+    const pool = [entry("一", "one"), reviewed, entry("二", "two"), entry("三", "three")];
+    const question = buildQuestion(pool[0], 6, pool, 1);
+    expect(question.options).not.toContain("(literary) to give; to accord; to render");
   });
 });

@@ -25,6 +25,11 @@ import { emptyCalibrationState, gradeVerification } from "@/lib/calibration/stat
 import type { CalibrationState } from "@/types/calibration";
 import type { SrsGrade } from "@/types/hskStudy";
 import type { WordEntry } from "@/types/dictionary";
+import {
+  primaryGloss,
+  primaryReading,
+  secondaryDefinitions,
+} from "@/lib/dictionary/entryGloss";
 
 interface Props {
   pool: WordEntry[];
@@ -158,9 +163,11 @@ export function StudySession({
 
             {revealed ? (
               <div className="mt-6 space-y-2">
-                <div className="text-lg font-medium text-seal">{word.pinyin}</div>
+                <div className="text-lg font-medium text-seal">{primaryReading(word)}</div>
                 <div className="mx-auto max-w-md text-base text-ink">
-                  {word.definitions.slice(0, 3).join("; ")}
+                  {[primaryGloss(word), ...secondaryDefinitions(word).slice(0, 2)]
+                    .filter(Boolean)
+                    .join("; ")}
                 </div>
                 <div className="flex items-center justify-center gap-2 pt-2">
                   <HskBadge level={word.hsk30 ?? word.hskLevel} />
@@ -369,7 +376,7 @@ function SidebarRow({
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2">
           <span className="font-cjk text-lg text-ink">{card.data.simplified}</span>
-          <span className="text-[11px] text-muted truncate">{card.data.pinyin}</span>
+          <span className="text-[11px] text-muted truncate">{primaryReading(card.data)}</span>
         </div>
         <div className="mt-0.5 flex items-center gap-1.5 text-[10.5px] text-muted">
           {card.done ? (

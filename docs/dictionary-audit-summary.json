@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "sourcePins": {
+    "cedict": {
+      "releasedAt": "2026-07-13T07:02:08Z",
+      "sha256": "93694f79555d06d58b12653c3efdbe56218c682f22decb0aa6416904d80bcf81",
+      "archiveSha256": "6a31189a3f745b61adbeb8ba1c9a353bf12baa4a99fb200c3a616c63f1978b72",
+      "license": "CC-BY-SA-4.0"
+    },
+    "hsk": {
+      "commit": "7ac65bf1a6387d35f1ade478906172a19311c7f9",
+      "sha256": "c869a0ce353279c9333d9b42c31fc3549785e8b40673dab57ee42bc99cd14131",
+      "license": "MIT"
+    }
+  },
+  "recordedBaseline": {
+    "capturedAt": "2026-07-19T00:00:00-04:00",
+    "baselineCommit": "acbddc6",
+    "dictionarySha256": "6d4d6dfe3cd876c7fa4038c7d2229de69b2fb07c9f6b44e8df40637b7c7790c8",
+    "totals": {
+      "generatedEntries": 120992,
+      "hsk1To6Entries": 5363,
+      "multiplePronunciations": 1247,
+      "hskMultiplePronunciations": 284,
+      "hskReadingsWithoutCedictMatch": 31,
+      "primaryGlossesContainingSurname": 866,
+      "hskPrimaryGlossesContainingSurname": 145,
+      "properNamePrimaryGlosses": 19233,
+      "hskProperNamePrimaryGlosses": 242,
+      "emptyDefinitions": 0,
+      "longFirstDefinitionsOver160Characters": 589,
+      "duplicateMeaningEntries": 10,
+      "flattenedPronunciationEntries": 1247,
+      "hskLearnerMeaningMateriallyDifferentFromOldPrimary": 383,
+      "unsuitableCalibrationEntries": 288,
+      "ambiguousOrUnsuitableCalibrationEntries": 515
+    }
+  },
+  "legacyProjectionTotals": {
+    "generatedEntries": 120992,
+    "hsk1To6Entries": 5363,
+    "flattenedPronunciationEntries": 1263,
+    "emptyPrimaryGlosses": 0,
+    "surnamePrimaryGlosses": 672,
+    "unsuitablePrimaryGlosses": 9644,
+    "longPrimaryGlosses": 589,
+    "duplicateMeaningEntries": 0,
+    "hskLearnerMeaningDiffersFromOldPrimary": 982,
+    "unsuitableCalibrationEntries": 566,
+    "unresolvedHsk1To6": 566
+  },
+  "totals": {
+    "generatedEntries": 120992,
+    "hsk1To6Entries": 5363,
+    "multiplePronunciations": 1263,
+    "hskMultiplePronunciations": 289,
+    "hskReadingUnmatchedToCedict": 0,
+    "emptyPrimaryGlosses": 0,
+    "surnamePrimaryGlosses": 236,
+    "properNamePrimaryGlosses": 19068,
+    "unsuitablePrimaryGlosses": 2129,
+    "longPrimaryGlosses": 546,
+    "duplicateMeaningEntries": 0,
+    "flattenedPronunciationEntries": 0,
+    "hskLearnerMeaningChangedFromOldPrimary": 561,
+    "unsuitableCalibrationEntries": 181,
+    "unresolved": 2296,
+    "unresolvedHsk1To6": 180,
+    "reviewed": 191,
+    "nonHskEntries": 109522,
+    "frequencyRankedNonHskEntries": 0
+  },
+  "markerLedPrimaryGlosses": {
+    "surname": 49,
+    "variantOf": 82,
+    "oldVariantOf": 18,
+    "archaic": 70,
+    "dialect": 256,
+    "see": 89,
+    "abbreviation": 25,
+    "usedIn": 487
+  },
+  "hskMarkerLedPrimaryGlosses": {
+    "surname": 0,
+    "variantOf": 0,
+    "oldVariantOf": 0,
+    "archaic": 0,
+    "dialect": 0,
+    "see": 0,
+    "abbreviation": 0,
+    "usedIn": 0
+  },
+  "byAuditReason": {
+    "flattened-pronunciations": 1263,
+    "hsk-learner-gloss-differs": 982,
+    "old-long-primary-gloss": 589,
+    "old-primary-archaic": 1084,
+    "old-primary-contains-surname": 866,
+    "old-primary-dialect": 362,
+    "old-primary-metadata": 102,
+    "old-primary-proper-name": 19233,
+    "old-primary-reference-only": 7428,
+    "old-primary-surname": 672,
+    "old-primary-variant-only": 2581,
+    "primary-gloss-changed": 28733,
+    "primary-reading-changed": 573
+  },
+  "resolvedByAuditReason": {
+    "flattened-pronunciations": 850,
+    "hsk-learner-gloss-differs": 869,
+    "old-long-primary-gloss": 578,
+    "old-primary-archaic": 320,
+    "old-primary-contains-surname": 765,
+    "old-primary-dialect": 109,
+    "old-primary-metadata": 18,
+    "old-primary-proper-name": 19062,
+    "old-primary-reference-only": 6634,
+    "old-primary-surname": 573,
+    "old-primary-variant-only": 2417,
+    "primary-gloss-changed": 28402,
+    "primary-reading-changed": 440
+  },
+  "unresolvedByAuditReason": {
+    "flattened-pronunciations": 413,
+    "hsk-learner-gloss-differs": 113,
+    "old-long-primary-gloss": 11,
+    "old-primary-archaic": 764,
+    "old-primary-contains-surname": 101,
+    "old-primary-dialect": 253,
+    "old-primary-metadata": 84,
+    "old-primary-proper-name": 171,
+    "old-primary-reference-only": 794,
+    "old-primary-surname": 99,
+    "old-primary-variant-only": 164,
+    "primary-gloss-changed": 331,
+    "primary-reading-changed": 133
+  },
+  "byHskLevel": {
+    "1": 506,
+    "2": 750,
+    "3": 953,
+    "4": 972,
+    "5": 1059,
+    "6": 1123,
+    "7-9": 5606,
+    "unbanded": 110023
+  },
+  "byConfidence": {
+    "high": 85193,
+    "medium": 33523,
+    "review": 2276
+  },
+  "byDefinitionSource": {
+    "cedict": 108978,
+    "curated": 66,
+    "hsk": 11948
+  },
+  "byManualReviewStatus": {
+    "not-required": 118505,
+    "pending": 2296,
+    "reviewed": 191
+  },
+  "byResolutionStatus": {
+    "resolved": 43315,
+    "unchanged": 75381,
+    "unresolved": 2296
+  },
+  "unresolvedByHskLevel": {
+    "1": 23,
+    "2": 36,
+    "3": 23,
+    "4": 32,
+    "5": 27,
+    "6": 39,
+    "7-9": 18,
+    "unbanded": 2098
+  },
+  "tierC": {
+    "requestedFrequencyRankedNonHskEntries": 5000,
+    "availableFrequencyRankedNonHskEntries": 0,
+    "deterministicStrictAuditAppliedToAllNonHskEntries": 109522,
+    "status": "blocked-by-missing-non-hsk-frequency-data"
+  }
+}

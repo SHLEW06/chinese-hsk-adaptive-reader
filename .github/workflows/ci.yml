@@ -23,6 +23,11 @@ jobs:
             package-lock.json
             functions/package-lock.json
 
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
       - name: Install web app dependencies
         run: npm ci
 

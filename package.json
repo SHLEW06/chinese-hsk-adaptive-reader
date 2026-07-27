@@ -2,6 +2,10 @@
   "name": "chinese-adaptive-reader",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "prebuild": "node -e \"const fs=require('fs'); if(!fs.existsSync('public/dict/dictionary.min.json')){console.error('Missing public/dict/dictionary.min.json. Run: npm run fetch:dict-sources && npm run build:dict');process.exit(1)}\"",
@@ -12,6 +16,7 @@
     "typecheck:functions": "npm run typecheck --prefix functions",
     "test": "vitest",
     "test:run": "vitest run",
+    "test:rules": "firebase emulators:exec --only firestore \"vitest run --config vitest.rules.config.ts\"",
     "deploy": "firebase deploy",
     "deploy:hosting": "firebase deploy --only hosting",
     "deploy:firestore": "firebase deploy --only firestore",
@@ -36,27 +41,35 @@
     "library:normalize": "node scripts/normalize-library-content.mjs --write",
     "hsk:coverage": "npm run library:check && node scripts/hsk-coverage.mjs",
     "check:hsk-coverage": "npm run library:check && node scripts/hsk-coverage.mjs --check",
-    "validate": "npm run check:dict-sources && npm run lint && npm run typecheck && npm run typecheck:functions && npm run test:run && npm run check:dict-audit && npm run check:hsk-coverage && npm run build"
+    "validate": "npm run check:dict-sources && npm run lint && npm run typecheck && npm run typecheck:functions && npm run test:run && npm run test:rules && npm run check:dict-audit && npm run check:hsk-coverage && npm run build"
   },
   "dependencies": {
     "firebase": "^12.15.0",
     "idb-keyval": "^6.2.5",
     "lucide-react": "^0.408.0",
-    "next": "^14.2.35",
+    "next": "15.5.22",
     "pinyin-pro": "^3.28.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "5.0.1",
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.1",
-    "eslint-config-next": "^14.2.35",
-    "postcss": "^8.4.39",
+    "eslint-config-next": "15.5.22",
+    "firebase-tools": "15.24.0",
+    "postcss": "8.5.23",
     "tailwindcss": "^3.4.6",
     "typescript": "^5.5.3",
     "vitest": "^3.2.7"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "8.5.23",
+      "sharp": "0.35.3"
+    }
   }
 }

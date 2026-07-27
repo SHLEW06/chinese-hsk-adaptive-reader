@@ -31,6 +31,7 @@ npm run typecheck
 # Checks Firebase Functions with functions/tsconfig.json and its dependencies.
 npm run typecheck:functions
 npm run test:run
+npm run test:rules
 npm run check:hsk-coverage
 npm run build
 # Runs both TypeScript scopes and the complete validation sequence.

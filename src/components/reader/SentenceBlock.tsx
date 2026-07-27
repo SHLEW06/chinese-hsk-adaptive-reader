@@ -42,6 +42,16 @@ function RenderToken({
   return (
     <span
       onClick={() => clickable && onWord(tok.text, tok.entry, sentence)}
+      onKeyDown={(event) => {
+        if (!clickable) return;
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onWord(tok.text, tok.entry, sentence);
+        }
+      }}
+      role={clickable ? "button" : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      aria-label={clickable ? `Look up ${tok.text}` : undefined}
       className="word-tap"
       data-flag={tok.kind === "word" ? "word" : "char"}
     >

@@ -3,7 +3,7 @@ import { initializeApp, getApps } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import { createHash } from "crypto";
 import { getProvider, getProviderSecrets } from "./ai";
-import { validateLevel, validateRuleBased } from "./ai/validate";
+import { validateLevel, validateRuleBasedBatch } from "./ai/validate";
 
 if (!getApps().length) initializeApp();
 const db = getFirestore();
@@ -80,10 +80,10 @@ export const explainSentencesBatch = onCall(
       }
     }
     const level = validateLevel(rawLevel);
-    const rbArr: unknown[] = Array.isArray(ruleBased) ? ruleBased : [];
-    // Each rule-based entry is interpolated into the prompt; cap per entry so
-    // the total prompt stays bounded by MAX_BATCH * MAX_RULEBASED_JSON_BYTES.
-    for (const rb of rbArr) validateRuleBased(rb);
+    // Each rule-based entry is interpolated into the prompt. Bound both the
+    // entry size and array length so unused entries cannot inflate memory or
+    // validation work before the provider request.
+    const rbArr = validateRuleBasedBatch(ruleBased, sentences.length);
 
     // 1. Cache lookup for every sentence
     const refs = sentences.map((s) =>

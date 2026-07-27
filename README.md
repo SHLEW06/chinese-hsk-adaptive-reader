@@ -5,6 +5,8 @@ passages with hand-authored translations, tap any word for an instant
 dictionary popup, save vocabulary as you read, and graduate words to "learned"
 through spaced repetition.
 
+[Open the live reader](https://chinese-adaptive-reader.web.app/)
+
 - **Static export** for Firebase Hosting (no Node server required at runtime).
 - **Frontend** is fully separated from the **backend**: AI features live in
   Firebase Cloud Functions behind authenticated callable endpoints; no API key
@@ -107,7 +109,7 @@ through spaced repetition.
 
 ## Tech stack
 
-- **Next.js 14 (App Router)** with `output: "export"` — every page is
+- **Next.js 15 (App Router)** with `output: "export"`. Every page is
   pre-rendered to static HTML.
 - **React 18** + **TypeScript** (strict mode).
 - **TailwindCSS** with a warm paper / seal-red palette and a separate night
@@ -167,9 +169,10 @@ chinese-adaptive-reader/
 ## Local setup
 
 ```bash
-git clone https://github.com/<you>/chinese-hsk-adaptive-reader.git
+git clone https://github.com/SHLEW06/chinese-hsk-adaptive-reader.git
 cd chinese-adaptive-reader
-npm install
+npm ci
+npm ci --prefix functions
 
 # Materialize hash-pinned sources and build the audited dictionary artifact
 npm run fetch:dict-sources
@@ -209,12 +212,13 @@ npm ci
 npm ci --prefix functions
 npm run typecheck             # Next.js application
 npm run typecheck:functions   # Firebase Functions
+npm run test:rules            # Firestore owner isolation and deny tests
 npm run validate              # Both scopes plus all repository checks
 ```
 
-Pull requests targeting `main` run linting, both TypeScript checks,
-deterministic unit tests, HSK coverage validation, and a production build in
-GitHub Actions.
+Changes to `main` run linting, both TypeScript checks, deterministic unit
+tests, Firestore emulator tests, HSK coverage validation, and a production
+build in GitHub Actions.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, branch conventions, generated
 HSK coverage policy, and issue reporting guidance.
@@ -237,7 +241,7 @@ needed for normal use. If you want to wire the AI fallback:
 
 ```bash
 cd functions
-npm install
+npm ci
 firebase functions:secrets:set GROQ_API_KEY   # follow the prompt
 firebase deploy --only functions
 ```
@@ -286,11 +290,11 @@ dashboard uploads existing browser progress only when the user opts in.
   annotation.
 - All library passages are original, written for learning purposes.
 
+The application source code is available under the [MIT License](LICENSE).
 The generated dictionary artifact (`public/dict/dictionary.min.json`) is a
-derivative work and is governed by CC-BY-SA 4.0. The app's own source code
-is separate from the dictionary data — release under whichever license fits
-your fork. See [Third-party notices](THIRD_PARTY_NOTICES.md) for the complete
-source pins, attribution, license text, and dictionary modification notice.
+separate derivative work governed by CC BY-SA 4.0. See
+[Third-party notices](THIRD_PARTY_NOTICES.md) for the source pins, attribution,
+license text, and dictionary modification notice.
 
 ## Disclaimer
 

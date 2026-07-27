@@ -14,9 +14,10 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      // User root document (not currently used, but locked to owner)
+      // The application stores data only in the named subcollections below.
+      // Keep the unused root document closed so new surfaces must opt in.
       allow read: if isOwner(userId);
-      allow write: if isOwner(userId) && docUnder(30);
+      allow write: if false;
 
       // Saved words — validate shape to prevent junk writes
       match /savedWords/{wordId} {
@@ -34,14 +35,17 @@ service cloud.firestore {
 
       // Learner profile
       match /profile/{docId} {
-        allow read: if isOwner(userId);
-        allow write: if isOwner(userId) && docUnder(30);
+        allow read: if isOwner(userId) && docId == "main";
+        allow write: if isOwner(userId)
+          && docId == "main"
+          && docUnder(30);
       }
 
       // Vocabulary calibration state (single "main" doc per user)
       match /calibration/{docId} {
-        allow read: if isOwner(userId);
+        allow read: if isOwner(userId) && docId == "main";
         allow write: if isOwner(userId)
+          && docId == "main"
           && request.resource.data.schemaVersion == 1
           && request.resource.data.status in ["notStarted", "inProgress", "completed"]
           && docUnder(30);

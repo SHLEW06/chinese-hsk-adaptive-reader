@@ -9,4 +9,11 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  test: {
+    exclude: [
+      "tests/firestore.rules.test.ts",
+      "**/node_modules/**",
+      "**/.git/**",
+    ],
+  },
 });

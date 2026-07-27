@@ -40,3 +40,21 @@ export function validateRuleBased(ruleBased: unknown): void {
     );
   }
 }
+
+export function validateRuleBasedBatch(
+  ruleBased: unknown,
+  maxItems: number,
+): unknown[] {
+  if (ruleBased === undefined || ruleBased === null) return [];
+  if (!Array.isArray(ruleBased)) {
+    throw new HttpsError("invalid-argument", "ruleBased must be an array");
+  }
+  if (ruleBased.length > maxItems) {
+    throw new HttpsError(
+      "invalid-argument",
+      `ruleBased may contain at most ${maxItems} entries`,
+    );
+  }
+  for (const entry of ruleBased) validateRuleBased(entry);
+  return ruleBased;
+}

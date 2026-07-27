@@ -13,13 +13,13 @@ import {
 } from "lucide-react";
 
 const items = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/reader", label: "Reader", icon: BookOpen },
-  { href: "/library", label: "Library", icon: Library },
-  { href: "/vocabulary", label: "Vocabulary", icon: ListOrdered },
-  { href: "/dictionary", label: "Dictionary", icon: Search },
-  { href: "/saved-words", label: "Saved", icon: Bookmark },
-  { href: "/placement", label: "Placement", icon: GraduationCap },
+  { href: "/dashboard", label: "Dashboard", shortLabel: "Home", icon: LayoutDashboard },
+  { href: "/reader", label: "Reader", shortLabel: "Reader", icon: BookOpen },
+  { href: "/library", label: "Library", shortLabel: "Library", icon: Library },
+  { href: "/vocabulary", label: "Vocabulary", shortLabel: "Vocab", icon: ListOrdered },
+  { href: "/dictionary", label: "Dictionary", shortLabel: "Dict.", icon: Search },
+  { href: "/saved-words", label: "Saved", shortLabel: "Saved", icon: Bookmark },
+  { href: "/placement", label: "Placement", shortLabel: "Level", icon: GraduationCap },
 ];
 
 export function Nav() {
@@ -33,12 +33,13 @@ export function Nav() {
       }}
     >
       <div className="mx-auto grid max-w-5xl grid-cols-7 sm:flex sm:gap-1 sm:px-4 sm:py-2.5">
-        {items.map(({ href, label, icon: Icon }) => {
+        {items.map(({ href, label, shortLabel, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link
               key={href}
               href={href}
+              aria-label={label}
               className="group relative flex flex-col items-center gap-0.5 py-2 text-[10.5px] transition-colors sm:flex-row sm:gap-1.5 sm:rounded-full sm:px-3.5 sm:py-1.5 sm:text-sm"
               style={
                 active
@@ -56,7 +57,8 @@ export function Nav() {
                   active ? "" : "group-hover:scale-110"
                 }`}
               />
-              <span>{label}</span>
+              <span className="sm:hidden">{shortLabel}</span>
+              <span className="hidden sm:inline">{label}</span>
               {active && (
                 <span
                   className="absolute -top-px left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-b-full sm:hidden"

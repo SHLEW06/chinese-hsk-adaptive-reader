@@ -47,6 +47,9 @@ jobs:
       - name: Unit tests
         run: npm run test:run
 
+      - name: Firestore security rules
+        run: npm run test:rules
+
       - name: Check HSK coverage report
         run: npm run check:hsk-coverage
 

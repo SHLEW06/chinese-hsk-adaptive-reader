@@ -17,15 +17,20 @@ export function generateStaticParams() {
   return Array.from(new Map([...fromLibrary, ...fromLegacy].map((item) => [item.id, item])).values());
 }
 
-export default function ContentDetailPage({ params }: { params: { id: string } }) {
+export default async function ContentDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
   // Resolve static library content first. This route must never wait for auth,
   // Firestore, or imported-content storage before rendering a reading.
-  const libraryItem = getLibraryItem(params.id);
+  const libraryItem = getLibraryItem(id);
   if (libraryItem) {
     return <LibraryDetail item={libraryItem} />;
   }
 
-  const legacy = starterContent.find((content) => content.id === params.id) || null;
+  const legacy = starterContent.find((content) => content.id === id) || null;
   if (legacy) {
     return <ContentReader text={legacy.text} title={legacy.title} contentId={legacy.id} />;
   }

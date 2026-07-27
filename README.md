@@ -1,11 +1,23 @@
 # Chinese Adaptive Reader
 
+[![CI](https://github.com/SHLEW06/chinese-hsk-adaptive-reader/actions/workflows/ci.yml/badge.svg)](https://github.com/SHLEW06/chinese-hsk-adaptive-reader/actions/workflows/ci.yml)
+
 A calm, paper-themed Mandarin reading app for HSK 1–6 learners. Read curated
 passages with hand-authored translations, tap any word for an instant
 dictionary popup, save vocabulary as you read, and graduate words to "learned"
 through spaced repetition.
 
 [Open the live reader](https://chinese-adaptive-reader.web.app/)
+
+![Chinese Adaptive Reader dashboard](docs/assets/dashboard.jpg)
+
+| Reading experience | Dictionary | Learning system | Delivery |
+|---|---|---|---|
+| Curated HSK 1–6 passages | About 121,000 pronunciation-aware entries | Placement, calibration, and spaced repetition | Static Next.js export on Firebase Hosting |
+
+The app works without an account through local storage. Google sign-in adds
+explicit, per-user cloud sync, while optional AI explanations stay behind
+authenticated server-side functions.
 
 - **Static export** for Firebase Hosting (no Node server required at runtime).
 - **Frontend** is fully separated from the **backend**: AI features live in
